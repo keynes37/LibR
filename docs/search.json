@@ -28,5 +28,192 @@
     "crumbs": [
       "Guías de R para Econometría"
     ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#limitaciones",
+    "href": "lecciones/unidad01.html#limitaciones",
+    "title": "1: Empecemos",
+    "section": "Limitaciones",
+    "text": "Limitaciones\nComo todo software (programa) R posee limitaciones, primeramente es un lenguaje que fue desarrollado en la década de los 80’s y cuando aun no estaba en pleno el Internet y no había mucho desarrollo tecnológico. Entre algunas limitaciones podemos resaltar:\n\nUso de memoria física alto.\nMontón de paquetes denominados packages y que no son nada uniformes\nCon bases de datos enormes (big data) se queda corto y hay que hacer uso de Spark u otros softwares que tienen que ver con SQL.",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#primeros-pasos",
+    "href": "lecciones/unidad01.html#primeros-pasos",
+    "title": "1: Empecemos",
+    "section": "Primeros pasos",
+    "text": "Primeros pasos\nLo primero es ir a la pagina de https://www.r-project.org e ir a la pestaña de CRAN y descargar la versión de acuerdo al sistema operativo que usted tenga, llamese Linux, Windows o IOS.\n\nDespues de haber instalado el programa, urge ir al link de R Studio que es un potente aliado1 en el entorno de ejecución del programa R, se le denomina IDE Por sus siglas en ingles significa Integrated Drive Electronics, no es mas que un entorno de desarrollo interactivo que facilita interactuar mejor y de manera mas “amigable” con todos los asuntos de los lenguajes de programación.\n\nDebe ir por lo pronto a la sección free, esperar el tiempo de acuerdo a la velocidad de conexión y luego ejecutarlo. Ya después de eso podrá interactuar mejor con R y visualmente todo será mejor para el trabajo.",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#script-bitacoras",
+    "href": "lecciones/unidad01.html#script-bitacoras",
+    "title": "1: Empecemos",
+    "section": "Script (Bitacoras)",
+    "text": "Script (Bitacoras)\nSiempre es bueno crear unas notas de código. Es una especie de cuaderno que le permite tener apuntes o escritos para saber que va haciendo linea a linea, incluso le sirve como un historial de desarrollo, de todas maneras R tiene su propio, pero es altamente recomendable que usted lo maneje de esta forma. Lo puede hacer en formato texto o txt del block de notas en su sistema operativo o también directamente desde el programa de R studio solo presionando las teclas ctrl+shift+N o de esta manera en el menú principal:\n\nNote que R Studio trabaja con 3 ventanas principales, estas son la de consola, Environment y File, todas tienen sus respectivas pestañas que le serán funcionales a la hora de hacer sus proyectos.\n\ndi_tu_nombre &lt;- function (nombre) {\n  paste(\"Hola y bienvenido(a),\", nombre, \"! al curso de econometría I\")\n}\ndi_tu_nombre(\"Carlos Andrés\")\n\n[1] \"Hola y bienvenido(a), Carlos Andrés ! al curso de econometría I\"\n\n\nLo anterior es un ejemplo de las múltiples funcionalidades que tiene el programa de R y puede incluso crear sus propios comandas a partir de la opción de function.",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#paquetes",
+    "href": "lecciones/unidad01.html#paquetes",
+    "title": "1: Empecemos",
+    "section": "Paquetes",
+    "text": "Paquetes\nEl programa de R contiene muchas funciones o formulas que ya vienen códificadas dentro de un conjunto de operaciones que se van a denominar paquetes. Estos deben ser instalados solo una vez y luego cada vez que vayan a ser usados deben cargarse con la función u orden library.\n\ninstall.packages(\"tidyverse\")\nlibrary(tidyverse)",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#primeros-cálculos",
+    "href": "lecciones/unidad01.html#primeros-cálculos",
+    "title": "1: Empecemos",
+    "section": "Primeros cálculos",
+    "text": "Primeros cálculos\nPara esta parte del curso, se establecerán algunos cálculos y operaciones básicas ya mostradas en los vídeos tutoriales de la clase y que se encuentran alojados en la carpeta de contenido en el blackboard. Esta primera parte solo tiene cálculos básicos y operaciones de tipo calculadora tal cual el programa así lo permite. Ejemplo:\n\n  452+100 # Una suma o adición\n  1455*sqrt(12) # Producto con la raíz cuadrada de 12\n  15**2 # Potencia de un número\n  300/30 # Simple división\n\nNote que el (#) es para decirle al programa que no ejecute lo que se encuentra después de él, se usa para tomar notas o escribir algo al respecto, por ejemplo:\n\n# Soy carlos yanes\n\nPara la parte de asignación de valores a una variable (X) -puede darle el nombre que le desee colocar- se tiene que:\n\n  a&lt;-2\n  a=2 # También se puede usar el igual\n  a^2 # El cuadrado de esa variable\n  abs(a) # Valor absoluto de la variable\n  sqrt(a) # Raíz cuadrada de la variable\n  log(a) # Logaritmo natural\n  log(a,b) # Logaritmo con base al valor b correspondiente,\n  exp(a) # Valor Exponencial de a\n  factorial(a) # Factor de a\n\nRecuerde que en R todo es un objeto y hay que ir asignando de cierta forma a lo que venimos trabajando, es la manera para ser organizados y no perder de vista calculos que se vienen desarrollando en la lista de aprendizaje.\nEn economía y en muchas ciencias sociales se hace uso extensivo de las matemáticas y de la estadística. Muchas veces será incluso necesario calcular o realizar algunas transformaciones en las variables para poder tener unas métricas mas informativas como son los logaritmos, valores absolutos, valores de forma exponencial o de notación científica, entre otros. Algunos comandos que se pueden usar en R para eso son:\n\n\n\nOperación\nResultado\n\n\n\n\nValor absoluto\nabs()\n\n\nLogaritmo\nlog()\n\n\nLogaritmo base\nlog(,)\n\n\nExponencial\nexp()\n\n\nFactorial\nfactorial()\n\n\nRaíz cuadrada\nsqrt()\n\n\n\nEl valor absoluto de un número como por ejemplo puede ser simplemente:\n\n  abs(-29) # Es el valor absoluto de (-29)\n\n[1] 29\n\n\nSin embargo, en una operación conjunta, si se posee una lista de elementos o un vector de elementos, es mucho mas simple implementarlo de tal forma que:\n\n  x&lt;-c(-26,-21,15,-11,-16,18,21,-31,-33, -24) # Lista de valores\n  abs(x)\n\n [1] 26 21 15 11 16 18 21 31 33 24\n\n\nDe igual forma, funciona con un logaritmo o también una operación que involucre una de forma de notación científica o exponencial, esto puede notarse así:\n\n  y&lt;-c(15,21,23,29,16,28,32,45,33) # Lista de valores para vector Y\n  log(y) #Se calcula el logaritmo de cada uno de los elementos\n\n[1] 2.708050 3.044522 3.135494 3.367296 2.772589 3.332205 3.465736 3.806662\n[9] 3.496508\n\n\nObserve que el Programa calcula el logaritmo natural de cada uno de los elementos del vector (y). Para la forma exponencial, es de uso de la notación del logaritmo base e y que muchos conocen como la expresión de Euler, e.g: \\(e^{x}\\), recuerde ademas que si este lo usamos de tal manera que \\(Y=ln(e^{x})=x\\). Un ejemplo de aplicación es el siguiente:\n\\[e^{150}=?\\]\n\nx&lt;-150 # Asignamos un valor a la expresión (x) \nexp(x) # En R exp hace referencia a la formula de (e)\n\n[1] 1.39371e+65\n\n\nTeniendo la asignación de valores a un objeto en R, podemos simplificar el uso o calculo de forma considerable.\nOtro ejemplo es el siguiente:\n\nx&lt;-300\nalgo.que.quiero.escribir&lt;-700\nx*algo.que.quiero.escribir\n\n[1] 210000\n\n\nRemover objetos en R requiere de la opción de rm() p.e:\n\nrm(x)\n\nSi su deseo el limpiar todo el Environment puede hacer uso de rm() y conjuntamente ls()\n\nrm(list=ls())",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#ambiente-de-elementos",
+    "href": "lecciones/unidad01.html#ambiente-de-elementos",
+    "title": "1: Empecemos",
+    "section": "Ambiente de elementos",
+    "text": "Ambiente de elementos\nEn R hay distintas formas y maneras de ver variables o asignarlas a un objeto. Con respecto a eso, podemos entonces comenzar a mirar los distintos tipos de variables y datos que tenemos en el entorno de trabajo:\n\nx &lt;- c(0.55, 0.72)     ## numérico\nx &lt;- c(TRUE, FALSE)    ## lógico\nx &lt;- c(T, F)           ## lógico\nx &lt;- c(\"a\", \"b\", \"c\")  ## cadena\nx &lt;- 15:28              ## entero\nx &lt;- c(1+0i, 2+3i)     ## complejo\n\nCon el objeto igual de saber la clasificación del valor en R usted puede hacer uso del comando class. P.e: si tengo la siguiente secuencia:\n\\[x=\\{ 8,9,10,11,\\cdots,30\\}\\] Entonces le decimos a R lo siguiente\n\nx&lt;-8:30\nclass(x)\n\n[1] \"integer\"\n\n\nConvertir un objeto a otro formato o tipo se puede hacer con la opción de as.numeric y cualquiera de los tipos que se establecieron como ejemplo anteriormente.\n\nas.numeric(x)\n\n [1]  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#análisis-de-vectores",
+    "href": "lecciones/unidad01.html#análisis-de-vectores",
+    "title": "1: Empecemos",
+    "section": "Análisis de vectores",
+    "text": "Análisis de vectores\nMuchas veces los vectores se convierten o consideran como una lista de elementos que finalmente constituyen una columna de una base de datos o dataframe. Para mirar un juego de esto, mire el código a continuación:\n\n# Definimos un vector x para todos los años:\nanos&lt;- c(2018,2019,2020,2021,2022,2023)\n# Definimos una matriz de y valores:\nproducto1&lt;-c(10,13,16,19,17,18); producto2&lt;-c(21,32,43,15,19,36); producto3&lt;-c(22,43,42,21,32,21)\n# Una forma de unir vectores es con el comando cbind\nventas_mat &lt;- cbind(producto1,producto2,producto3) \n# Nombramos las filas con el vector de años:\nrownames(ventas_mat) &lt;- anos \n# La matriz de datos es:\nventas_mat\n\n     producto1 producto2 producto3\n2018        10        21        22\n2019        13        32        43\n2020        16        43        42\n2021        19        15        21\n2022        17        19        32\n2023        18        36        21\n\n\nOtra manera o forma de crear datos en R es involucrando los nombres de personas que entrevistamos y obtenemos sus datos. Estos vienen en formato de caracteres y otros de forma numérica. Recuerde que combinar cada uno de los vectores (columnas) se hace con la función cbind que es una especie de (“merge”) o de unión de múltiples elementos (columnas) para formar adecuadamente una base de datos.\n\n# Definimos un vector x para todos los individuos:\nindividuos&lt;- c(\"Carlos\", \"Jose\", \"Maria\", \"Susana\")\nedad&lt;-c(29,41,28,29); estrato&lt;-c(3,4,3,2); civil&lt;-c(1,1,2,3)\ndatos_mat &lt;- cbind(edad,estrato,civil) \nrownames(datos_mat) &lt;- individuos \ndatos_mat\n\n       edad estrato civil\nCarlos   29       3     1\nJose     41       4     1\nMaria    28       3     2\nSusana   29       2     3\n\n\nSi por ejemplo queremos el promedio de edad de las personas, es fácil en R decir:\n\nmean(edad)\n\n[1] 31.75",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#factores-variables-cualitativas",
+    "href": "lecciones/unidad01.html#factores-variables-cualitativas",
+    "title": "1: Empecemos",
+    "section": "Factores (variables cualitativas)",
+    "text": "Factores (variables cualitativas)\nEn las ciencias sociales siempre es útil tener en cuenta las variables de corte cualitativo, como el genero, estado civil. el tratamiento ideal para esto es haciendo uso del comando o función factor, P.e:\n\nx&lt;- factor(c(\"Masculino\", \"Femenino\", \"Binario\", \"Masculino\", \"Masculino\", \"Femenino\"))\ntable(x) # Para calcular la frecuencia\n\nx\n  Binario  Femenino Masculino \n        1         2         3 \n\n\nSi por algún motivo queremos extraer o tener valores numéricos de las variables podemos entonces tener:\n\nunclass(x)\n\n[1] 3 2 1 3 3 2\nattr(,\"levels\")\n[1] \"Binario\"   \"Femenino\"  \"Masculino\"\n\n\nTambién, se puede hacer a la inversa. Esto es tener la lista o número de valores y luego proceder con el “etiquetado”. En el programa son conocido como niveles o levels. Para mostrar un ejemplo de eso, entonces tendremos:\n\n# Primero tenemos nuestra variable\ny&lt;-c(2,2,3,4,5,4,2,1,1,2,5,4,4,3)\n# Se especifican las etiquetas en el orden correspondiente\nfactor_y &lt;- factor(y, labels = c(\"Pesimo\", \"Malo\",\n                                \"Regular\", \"Bueno\", \"Excelente\"))\n# Miramos el resultado\nfactor_y\n\n [1] Malo      Malo      Regular   Bueno     Excelente Bueno     Malo     \n [8] Pesimo    Pesimo    Malo      Excelente Bueno     Bueno     Regular  \nLevels: Pesimo Malo Regular Bueno Excelente",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad01.html#footnotes",
+    "href": "lecciones/unidad01.html#footnotes",
+    "title": "1: Empecemos",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nPara mayor información consulte la pagina web o enlace de R Studio.↩︎",
+    "crumbs": [
+      "Parte 1",
+      "1: Empecemos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#video",
+    "href": "lecciones/unidad02.html#video",
+    "title": "2: Datos",
+    "section": "Video",
+    "text": "Video",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#chunks",
+    "href": "lecciones/unidad02.html#chunks",
+    "title": "2: Datos",
+    "section": "Chunks",
+    "text": "Chunks\nEl siguiente elemento son los chunks estos son una especie de integrador del código del programa con elementos del formato en el cual este redactando o haciendo un informe de Markdown.\n\nEs importante tener presente cada uno de los elementos que conforman el chunk, ademas de colocarle un nombre único comentarios y las opciones de estos.",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#operador-pipe",
+    "href": "lecciones/unidad02.html#operador-pipe",
+    "title": "2: Datos",
+    "section": "Operador Pipe",
+    "text": "Operador Pipe\nEl operador pipe %&gt;% ayuda a simplificar las lineas de código de tal manera que condensa o adjunta múltiples ordenes en pocas lineas:\ny&lt;- mean(log(x)) # Es similar a\ny&lt;- x %&gt;% log %&gt;% mean\nEn sintesis organiza las ordenes del código, lo anterior dice que con el objeto de x calcule el logaritmo y luego el promedio. Otro ejemplo o secuencia es:\nMire la siguiente linea bastante compleja en R si se opta por no usar el operador. Asuma la siguiente orden: Encuentre las llaves, desbloquea, maneja el carro hasta la U y finalmente parquea.\nparquea(conduce(prender_carro(encuentra(\"llaves\")),a= \"Universidad\"))\nCuando usa el operador %&gt;% la orden es mucho mejor y puede escribirla como:\nencuentra(\"llaves\") %&gt;%\n  prender_carro() %&gt;%\n  conduce(a= \"Universidad\")\n  parquea()\nDe esta manera es mas limpio y claro lo anterior. Para hacer uso del operador es recomendable haber instalado el paquete tidyverse.",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#paquete-dplyr",
+    "href": "lecciones/unidad02.html#paquete-dplyr",
+    "title": "2: Datos",
+    "section": "Paquete dplyr",
+    "text": "Paquete dplyr\nCon tidyverse también puede gestionar estadísticas, esto lo puede hacer con los comandos que se exponen a continuación:\n\nsummarise(Pruebadatos, Promedio=mean(Consumo))\n\n# A tibble: 1 × 1\n  Promedio\n     &lt;dbl&gt;\n1     24.3\n\n\nLo anterior nos brinda en un estilo de \\(\\bar{x}\\) de forma única o solo para una variable. Si queremos mirar en grupo.\n\nsummarise_each(Pruebadatos, funs(mean))\n\n# A tibble: 1 × 3\n  Consumo Ingreso Precios\n    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;\n1    24.3 889143.   4922.\n\n\nY con eso tendremos todas los promedios del caso. Hay otras opciones dentro de las funciones de dplyr para hallar valor mínimo o (min), el máximo, la varianza, entre otros.",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#paquete-skimr",
+    "href": "lecciones/unidad02.html#paquete-skimr",
+    "title": "2: Datos",
+    "section": "Paquete skimr",
+    "text": "Paquete skimr\nLo anterior también puede hacerlo con el paquete de skimr, que compila e incluso llega a gráficar. Para hacer uso de él debe establecer\n\nlibrary(skimr)\nskim(Pruebadatos)\n\n\nData summary\n\n\nName\nPruebadatos\n\n\nNumber of rows\n9\n\n\nNumber of columns\n3\n\n\n_______________________\n\n\n\nColumn type frequency:\n\n\n\nnumeric\n3\n\n\n________________________\n\n\n\nGroup variables\nNone\n\n\n\nVariable type: numeric\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nskim_variable\nn_missing\ncomplete_rate\nmean\nsd\np0\np25\np50\np75\np100\nhist\n\n\n\n\nConsumo\n0\n1\n24.33\n10.77\n10\n16\n25\n30\n45\n▆▂▇▁▂\n\n\nIngreso\n0\n1\n889142.67\n153511.64\n532900\n840200\n956920\n998564\n999300\n▂▁▂▃▇\n\n\nPrecios\n0\n1\n4922.22\n330.82\n4500\n4700\n4800\n5200\n5400\n▅▇▁▅▅",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#histogramas",
+    "href": "lecciones/unidad02.html#histogramas",
+    "title": "2: Datos",
+    "section": "Histogramas",
+    "text": "Histogramas\nEl histograma es uno de los primeros gráficos de uso para conocer mejor el punto de la distribución de variables. Con esto nos indica que proporción de observaciones contiene una característica en particular. Los histogramas pueden señalar que tan asimétricos son las observaciones y si existe o no un sesgo en la cola de la distribución.\n\n# Extraer datos para un vector\nPRS &lt;- Pruebadatos$Consumo\n\n# Figura (a): histograma (para orden y conteo)\nhist(PRS)\n\n\n\n\n\n\n\n# Densidad de la variable y aplicación con colores\nd &lt;- density(PRS)\nplot(d, main=\"Densidad Kernel del Consumo\")\npolygon(d, col=\"blue\", border=\"red\") \n\n\n\n\n\n\n\n#Densidad con Histograma\nx &lt;- Pruebadatos$Consumo\nh&lt;-hist(x, breaks=5, col=\"blue\", xlab=\"Consumo en unidades\", ylab = \"Frecuencia de consumo\",\n        main=\"Histograma con curva de la dist. Normal\")\nxfit&lt;-seq(min(x),max(x),length=40)\nyfit&lt;-dnorm(xfit,mean=mean(x),sd=sd(x))\nyfit &lt;- yfit*diff(h$mids[1:2])*length(x)\nlines(xfit, yfit, col=\"red\", lwd=2)\n\n\n\n\n\n\n\n\nDe lo anterior notamos que el consumo tiene una asimetría positiva (la cola de la distribución esta a la derecha) y tiene algunos datos en esa zona. Aunque hay una proporción de personas (40%) que contiene un consumo entre las 15 a 30 unidades respectivamente.",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#con-respecto-a-los-gráficos",
+    "href": "lecciones/unidad02.html#con-respecto-a-los-gráficos",
+    "title": "2: Datos",
+    "section": "Con respecto a los gráficos",
+    "text": "Con respecto a los gráficos\nRecuerde que los gráficos que provee R como base son muy buenos, sin embargo puede usar otros paquetes como el de ggplot que tambien contiene otras mejoras visuales.\n\nlibrary(ggplot2)\nggplot(Pruebadatos, aes(x = Consumo)) +\n  geom_histogram()\n\n\n\n\n\n\n\n# Con barras que decide el(la) autor(a) `binwidth`\nggplot(Pruebadatos, aes(x = Consumo)) +\n  geom_histogram(binwidth = 4)",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad02.html#footnotes",
+    "href": "lecciones/unidad02.html#footnotes",
+    "title": "2: Datos",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nEn la pestaña de files del menú inferior se encuentra la tuerquita (more) que le da la opción de directorio de trabajo↩︎\nRecuerde que para instalar programas debe hacer uso del comando install.packages(\"tidyverse\")↩︎\nSe creo una nueva base (df), pero también puede usar la misma.↩︎",
+    "crumbs": [
+      "Parte 1",
+      "2: Datos"
+    ]
   }
 ]
