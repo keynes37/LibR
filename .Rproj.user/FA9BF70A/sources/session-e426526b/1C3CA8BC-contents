@@ -1,0 +1,38 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - "www/*"
+  preview:
+    port: 3000
+    browser: false
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+website:
+  title: "Guía de Econometría para R (Uninorte)"
+  description: "Métodos cuantitativos en Econometría"
+  twitter-card: true
+  open-graph: true
+  reader-mode: true
+  page-navigation: true
+  repo-branch: master
+  repo-url: https://github.com/keynes37
+  repo-actions: [issue]
+  navbar:
+    background: primary
+    search: true
+    right:
+      - icon: github
+        href: https://github.com/keynes37
+      - icon: globe
+        href: https://carlosyanes.netlify.app/
+  sidebar:
+    style: "floating"
+
+metadata-files:
+  - sidebar.yml

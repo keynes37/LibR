@@ -1,0 +1,32 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Guías de R para Econometría",
+    "section": "",
+    "text": "Pendiente!\n\n\n\nEl aprender de los elementos de R son cruciales para desarrollar los proyectos del curso.",
+    "crumbs": [
+      "Guías de R para Econometría"
+    ]
+  },
+  {
+    "objectID": "index.html#bienvenidos",
+    "href": "index.html#bienvenidos",
+    "title": "Guías de R para Econometría",
+    "section": "Bienvenidos!",
+    "text": "Bienvenidos!\nEconometría I es un curso introductorio que proporciona los fundamentos para analizar datos económicos utilizando métodos estadísticos y matemáticos. Es dado en el quinto semestre de los estudiantes del departamento de Economía de la Universidad del Norte   El curso busca desarrollar habilidades para:\n\n\n\n\n\n\n\n\n\n\nConstrucción de modelos teóricos para explicar fenómenos económicos.\nUtilización de datos para estimar los valores de los parámetros de los modelos económicos.\nRealización de pruebas de hipótesis para evaluar la validez de los modelos económicos.\nAplicación de técnicas de regresión lineal para analizar la relación entre variables económicas.\nEstudio de la evolución de variables económicas a lo largo del tiempo.\nUso de lenguaje como R para llevar a cabo análisis cuantitativo.\n\n\n\n\n\n\n\n\n\n\nEmpezamos\n\n\n\nEmpiece con la lección 1 de una vez! ahi encontrará como instalar R.",
+    "crumbs": [
+      "Guías de R para Econometría"
+    ]
+  },
+  {
+    "objectID": "index.html#su-profesor",
+    "href": "index.html#su-profesor",
+    "title": "Guías de R para Econometría",
+    "section": "Su Profesor",
+    "text": "Su Profesor\n\n\n\n\n\n\nSoy Carlos Yanes, Economista de la Universidad de Cartagena. A lo largo de mi carrera me he interesado en temas estadísticos y matemáticos aplicados a las ciencias sociales.\n\n\n\n\n\nCarlos Yanes",
+    "crumbs": [
+      "Guías de R para Econometría"
+    ]
+  }
+]

@@ -1,0 +1,287 @@
+---
+title: "2: Datos"
+---
+
+::: {layout="[30,70]"}
+
+![](images/datatw.png)
+
+Hoy estarás mirando como se trabaja con datos en R, podras ver una forma en video, otra de forma manual siguiendo la lectura de esta página. La idea es que termines creando tu propio conjunto de datos.
+:::
+
+## Video
+
+<iframe width="514" height="289" src="https://www.youtube.com/embed/Bi0PoYq_gjE?si=Ue5WzMqMUyPOvHd2" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+```{r setup, include=FALSE}
+library(flextable)
+library(extrafont)
+library(kableExtra)
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Resumen
+
+Consecuente a lo que venimos haciendo en el curso de econometría I. Esta parte contiene lo referente a la __importación de datos__ en distintos formatos y las primeras medidas en estadística básicas conocidas como medidas de __tendencia central__ , estas se usan para el **análisis de datos**, al igual que el tema de la distribución de una variable.
+
+# Markdown 
+
+Un compilador potente que permite juntar códigos de **R**, ecuaciones de **LaTeX** y textos para obtener documentos **científicos** ya sea en formato de _html_, _pdf_ y/o _word_. Se puede desplegar desde el menu de **R Studio**. Una guía completa de él lo puede hallar en este [enlace](https://bookdown.org/yihui/rmarkdown/) y su creador es 
+Yihui Xie.
+
+![](images/mark1.gif)
+
+Los archivos de **Markdown** tienen varios campos para completar o llenar. Los primeros son los títulos, estos deben ser usados con el operador (`#`), que indica principal, secundario, subtitulo y así.
+
+| Formato | Salida       |
+|---------|--------------|
+| #       | Titulo       |
+| ##      | Subtitulo    |
+| ###     | Subsubtitulo |
+
+Como también para colocar algo en <span style="color:black"> **negrilla** </span> es con $(**)$ y en el estilo de _cursivas_ con un solo asterisco $(*)$.
+
+Por ejemplo, si hago uso de los asteriscos simples `*carlos*` dará como resultado _carlos_, o si usa los dos (doble) asteriscos como p.e: `**carlos**` tendremos en el la casilla en negrilla, p.e: **carlos**
+
+## Chunks
+
+El siguiente elemento son los `chunks` estos son una especie de integrador del código del programa con elementos del formato en el cual este redactando o haciendo un informe de **Markdown**.
+
+![](images/chunk1.png)
+
+Es importante tener presente cada uno de los elementos que conforman el chunk, ademas de colocarle un nombre *único* comentarios y las opciones de estos.
+
+# Importar bases de datos
+
+Las bases de datos que vienen en múltiples formatos distintos a los de **R** deben ser importados a partir de paquetes como `foreign, haven, readxl`, entre otros. Un ejemplo de esto es:
+
+```{R import}
+library(foreign)    # Para convertir datos *.dta (STATA)
+library(haven)      # Para importar datos de otros programas
+library(readxl)     # Para leer archivos de excel
+
+# Ejemplo de una base de datos que esta en excel (debe tener cuidado con la ruta de su computador C:)
+
+Pruebadatos <- read_excel("Prueba.xlsx")
+
+View(Pruebadatos) # Para explorar la base
+
+#Exportar una base de datos desde R a formato CSV de excel con el comando "write"
+write.csv(Pruebadatos, file = "archivodeprueba.csv")
+```
+
+Otra forma de hacerlo es con la ayuda del menú de __R Studio__ 
+
+![](images/imp1.gif)
+
+Es de recordar que al exportar datos, estos quedan grabados en la carpeta de trabajo^[En la pestaña de files del menú inferior se encuentra la tuerquita (more) que le da la opción de directorio de trabajo] que se le ha establecido al programa desde un inicio.
+
+# Manejo de datos y variables
+
+En algunas ocasiones, a los datos le harán falta variables _nuevas_, o habrá necesidad de crear o adicionar mas datos. Una manera de hacerlo es con el paquete de `dplyr` del conjunto de `tidyverse`^[Recuerde que para instalar programas debe hacer uso del comando `install.packages("tidyverse")`].
+
+```{r, tidycrown}
+library(tidyverse)
+tbl_df(Pruebadatos) # Para formato tibble
+glimpse(Pruebadatos) # Mirar las variables
+
+# Para crear una nueva variable puede hacerlo con:
+df=mutate(Pruebadatos, ahorro=Ingreso-(Consumo*Precios))
+df
+```
+
+Si se logra notar, se tiene ahora una base de datos con una nueva variable^[Se creo una nueva base (df), pero también puede usar la misma.].
+
+Añadir **filas** en el formato `dplyr` se puede hacer de la siguiente forma:
+
+```{r, formt}
+Pruebadatos %>% add_row(Consumo = 39, Ingreso = 895400, Precios=4700)
+```
+
+Recuerde que para las **columnas** (variables) se usa es la función del paquete `dplyr` y cu `mutate`.
+
+## Operador Pipe 
+
+El operador **pipe** `%>%` ayuda a simplificar las lineas de código de tal manera que condensa o adjunta múltiples ordenes en pocas lineas:
+
+```r
+y<- mean(log(x)) # Es similar a
+y<- x %>% log %>% mean
+```
+
+En sintesis organiza las ordenes del código, lo anterior dice que con el *objeto de x calcule el logaritmo y luego el promedio*. Otro ejemplo o secuencia es:
+
+Mire la siguiente linea bastante compleja en **R** si se opta por no usar el operador. Asuma la siguiente orden: *Encuentre las llaves, desbloquea, maneja el carro hasta la U y finalmente parquea.*
+
+```r
+parquea(conduce(prender_carro(encuentra("llaves")),a= "Universidad"))
+```
+
+Cuando usa el operador `%>%` la orden es mucho mejor y puede escribirla como:
+
+```r
+encuentra("llaves") %>%
+  prender_carro() %>%
+  conduce(a= "Universidad")
+  parquea()
+```
+
+De esta manera es mas limpio y claro lo anterior. Para hacer uso del operador es recomendable haber instalado el paquete `tidyverse`.
+
+# Caracterización de los datos
+
+La **importancia** del análisis de datos (EDA) es requerida para tomar decisiones y conocer muy bien lo que cada una de las variables nos esta indicando, es por esto que recurrimos a la _estadística_ y hacemos uso de las distintas medidas de tendencia central ampliamente conocidas como __media__, __desviación estándar__, __asimetría__ y __curtosis__.
+
+$$
+  \begin{aligned}
+\text{Promedio } =& \frac{\sum_{i=1}^{n} x_{i}}{n} = \bar{x} \\
+\text{Varianza } =& \frac{\sum_{i=1}^{n} (x_{i} - \bar{x})^{2}}{n} = Var(x) \\
+\text{Asimetría}=& \frac{\sum_{i=1}^{n} (x_{i} - \bar{x})^{3}}{\sigma^{3}} = A(x) \\
+\text{Curtosis }= & \frac{\sum_{i=1}^{n} (x_{i} - \bar{x})^{4}}{n\sigma^{2}}-3 = K(x)
+\end{aligned}    
+$$
+  _Donde n es el tamaño de la muestra, x las observaciones, $\sigma$ la desviación estándar, $\bar{x}$ la media de la distribución_. Con una base de datos podemos entonces tener:
+  
+```{r met1}
+# Promedio de una variable:
+mean(Pruebadatos$Consumo)
+```
+
+Que hace el respectivo cálculo de el promedio de la variable en cuestión, como lo es en este caso el `Consumo`. Para el cálculo de la **mediana** (segundo momento de una distribución) podemos hacerlo de la siguiente forma 
+
+```{r}
+# Mediana:
+median(Pruebadatos$Consumo)
+```
+
+Con respecto a la varianza y la propia desviación estándar de la variable se hace uso de
+
+```{r}
+# Desviación estándar:
+sd(Pruebadatos$Consumo)
+
+# Varianza
+var(Pruebadatos$Consumo)
+```
+
+Pero incluso podemos tener todo el bloque *básico* completo a partir de la función que resume todas y cada una de estas en el grupo de variables que tenemos dentro de nuestra **base de datos**
+
+```{r}
+# Un resumen completo
+summary(Pruebadatos$Consumo)
+```
+
+Que son los cálculos por variable de las primeras medidas de estadística descriptiva. La **interpretación** de cada uno de ellos es vital en el _análisis de datos_. Para el calculo del tercer y cuarto momento hay que hallar y tener en cuenta la instalación del paquete de `moments`
+
+```{r mom}
+# Usar paquete Momentos de la distribución
+library(moments) 
+
+# Asimetría
+skewness(Pruebadatos$Consumo)
+
+# Curtosis
+kurtosis(Pruebadatos$Consumo)
+```
+
+En este caso la **asimetría** nos dice que tan sesgada hacia un lado esta la distribución de los datos, la recomendación de _asimetría_ es que esta sea cero (0), o se encuentre cerca de ese valor y la **Kurtosis** el grado de punta que tiene la distribución, se puede de acuerdo al valor obtenido clasificar como:
+  
+$$\begin{aligned}
+\text{Mesocurtica}: \; & K = 3  \\
+\text{Leptocurtica}: \; & K > 3 \\
+\text{Platicurtica}: \; & K < 3
+\end{aligned}$$
+
+## Paquete dplyr
+
+Con `tidyverse` también puede gestionar estadísticas, esto lo puede hacer con los comandos que se exponen a continuación:
+
+```{r, poctidyver}
+summarise(Pruebadatos, Promedio=mean(Consumo))
+```
+
+Lo anterior nos brinda en un estilo de $\bar{x}$ de forma única o solo para una variable. Si queremos mirar en grupo.
+
+```{r, poctidyver1}
+summarise_each(Pruebadatos, funs(mean))
+```
+
+Y con eso tendremos todas los promedios del caso. Hay otras opciones dentro de las funciones de `dplyr` para hallar valor mínimo o (min), el máximo, la varianza, entre otros.
+
+## Paquete skimr
+
+Lo anterior también puede hacerlo con el paquete de `skimr`, que compila e incluso llega a gráficar. Para hacer uso de él debe establecer
+
+```{r skim}
+library(skimr)
+skim(Pruebadatos)
+```
+
+
+# Distribución de una variable
+
+La distribución de una variable $x$ siempre es necesaria. Con esto podemos identificar ciertos patrones comunes.
+
+```{r dist}
+#Gráficos esenciales
+curve(x^2, -2, 2)
+curve(dnorm(x), -3, 3)
+
+#Algunas etiquetas y estilos
+curve(dnorm(x,0,1), -10, 10, lwd=1, lty=1)
+curve(dnorm(x,0,2), add=TRUE, lwd=2, lty=2)
+curve(dnorm(x,0,3), add=TRUE, lwd=3, lty=3)
+
+#De lo anterior pero con etiquetas
+#Adición de etiquetas
+legend("topleft", expression(sigma==1, sigma==2, sigma==3), lwd=1:3, lty = 1:3)
+#Adición de formula centrada en x=6 y y=0.3
+text(6, .3,
+     expression(f(x)==frac(1, sqrt(2*pi)*sigma)*e^{-frac(x^2, 2*sigma^2)}))
+```
+
+La opción de `expression` permite escribir ecuaciones y textos dentro del gráfico. Siempre es bueno tener en consideración la posición que queremos que tenga.
+
+## Histogramas 
+
+El histograma es uno de los primeros gráficos de uso para conocer mejor el punto de la distribución de variables. Con esto nos indica que proporción de observaciones contiene una característica en particular. Los histogramas pueden señalar que tan asimétricos son las observaciones y si existe o no un sesgo en la cola de la distribución.
+
+```{r Hist}
+# Extraer datos para un vector
+PRS <- Pruebadatos$Consumo
+
+# Figura (a): histograma (para orden y conteo)
+hist(PRS)
+
+# Densidad de la variable y aplicación con colores
+d <- density(PRS)
+plot(d, main="Densidad Kernel del Consumo")
+polygon(d, col="blue", border="red") 
+
+#Densidad con Histograma
+x <- Pruebadatos$Consumo
+h<-hist(x, breaks=5, col="blue", xlab="Consumo en unidades", ylab = "Frecuencia de consumo",
+        main="Histograma con curva de la dist. Normal")
+xfit<-seq(min(x),max(x),length=40)
+yfit<-dnorm(xfit,mean=mean(x),sd=sd(x))
+yfit <- yfit*diff(h$mids[1:2])*length(x)
+lines(xfit, yfit, col="red", lwd=2)
+```
+
+De lo anterior notamos que el **consumo** tiene una asimetría positiva (la cola de la distribución esta a la derecha) y tiene algunos datos en esa zona. Aunque hay una proporción de personas (40%) que contiene un consumo entre las 15 a 30 unidades respectivamente.
+
+## Con respecto a los gráficos 
+
+Recuerde que los _gráficos_ que provee **R** como base son muy buenos, sin embargo puede usar otros paquetes como el de `ggplot` que tambien contiene otras mejoras visuales.
+
+```{r visg}
+library(ggplot2)
+ggplot(Pruebadatos, aes(x = Consumo)) +
+  geom_histogram()
+
+# Con barras que decide el(la) autor(a) `binwidth`
+ggplot(Pruebadatos, aes(x = Consumo)) +
+  geom_histogram(binwidth = 4)
+```
+

@@ -1,0 +1,54 @@
+---
+title: "Guías de R para Econometría"
+image: https://course.fast.ai/www/social.png
+description: Un curso para aprender aplicar los recursos de R en los temas de econometría
+creator: "@keynes37"
+---
+
+:::{.callout-tip}
+## Pendiente!
+
+El aprender de los elementos de R son cruciales para desarrollar los proyectos del curso.
+:::
+
+::: {layout="[30,70]"}
+
+![](imagenes/astroun.png)
+
+Este es un curso a nivel introductorio de econometría I. Intenta abordar los temas de los métodos cuantitativos para la economía, permitiendo que la estadística se vincule al análisis económico.<br /><br /> Algunos elementos adicionales los puede encontrar en [Ciencia de datos ](https://bookdown.org/gaston_becerra/curso-intro-r/)
+
+:::
+
+## Bienvenidos!
+
+**Econometría I** es un curso introductorio que proporciona los fundamentos para analizar datos económicos utilizando métodos estadísticos y matemáticos. Es dado en el quinto semestre de los estudiantes del departamento de Economía de la [Universidad del Norte](https://www.uninorte.edu.co/web/departamento-de-economia) </br> </br> El curso busca desarrollar habilidades para:
+
+
+::: {layout="[30,70]"}
+
+![](imagenes/ecouninorte.png)
+
+- Construcción de modelos teóricos para explicar fenómenos económicos.
+- Utilización de datos para estimar los valores de los parámetros de los modelos económicos.
+- Realización de pruebas de hipótesis para evaluar la validez de los modelos económicos.
+- Aplicación de técnicas de regresión lineal para analizar la relación entre variables económicas.
+- Estudio de la evolución de variables económicas a lo largo del tiempo.
+- Uso de lenguaje como R para llevar a cabo análisis cuantitativo.
+
+:::
+
+:::{.callout-tip}
+## Empezamos 
+
+Empiece con la [lección 1](Unidades/unidad01.qmd) de una vez! ahi encontrará como instalar R.
+:::
+
+## Su Profesor
+
+::: {layout="[70,30]"}
+
+Soy Carlos Yanes, Economista de la Universidad de Cartagena. A lo largo de mi carrera me he interesado en temas estadísticos y matemáticos aplicados a las ciencias sociales.
+
+![Carlos Yanes](imagenes/yanc.jpeg)
+
+:::
