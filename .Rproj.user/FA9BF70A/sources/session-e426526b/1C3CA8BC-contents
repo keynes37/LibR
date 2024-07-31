@@ -27,6 +27,8 @@ website:
     background: primary
     search: true
     right:
+      - icon: x-twitter
+        href: https://x.com/keynes37
       - icon: github
         href: https://github.com/keynes37
       - icon: globe
