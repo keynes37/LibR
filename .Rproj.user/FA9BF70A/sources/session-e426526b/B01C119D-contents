@@ -1,8 +1,0 @@
-website:
-  sidebar:
-    contents:
-      - index.qmd
-      - section: Parte 1
-        contents:
-          - lecciones/unidad01.qmd
-          - lecciones/unidad02.qmd

@@ -6,3 +6,4 @@ website:
         contents:
           - lecciones/unidad01.qmd
           - lecciones/unidad02.qmd
+          - lecciones/unidad03.qmd

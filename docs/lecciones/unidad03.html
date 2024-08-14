@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Guía de Econometría para R (Uninorte) - 3: Distribución de datos</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Guía de Econometría para R (Uninorte) - 3: Distribución de datos">
+<meta property="og:description" content="Métodos cuantitativos en Econometría">
+<meta property="og:site_name" content="Guía de Econometría para R (Uninorte)">
+<meta name="twitter:title" content="Guía de Econometría para R (Uninorte) - 3: Distribución de datos">
+<meta name="twitter:description" content="Métodos cuantitativos en Econometría">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Guía de Econometría para R (Uninorte)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/keynes37"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/keynes37"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://carlosyanes.netlify.app/"> <i class="bi bi-globe" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">3: Distribución de datos</li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guías de R para Econometría</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Parte 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1: Empecemos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2: Datos</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#resumen" id="toc-resumen" class="nav-link active" data-scroll-target="#resumen">Resumen</a></li>
+  <li><a href="#funciones-en-r" id="toc-funciones-en-r" class="nav-link" data-scroll-target="#funciones-en-r">Funciones en R</a></li>
+  <li><a href="#de-las-funciones-de-probabilidad" id="toc-de-las-funciones-de-probabilidad" class="nav-link" data-scroll-target="#de-las-funciones-de-probabilidad">De las funciones de probabilidad</a>
+  <ul class="collapse">
+  <li><a href="#integrabilidad-y-función-de-probabilidad-de-una-variable-continua" id="toc-integrabilidad-y-función-de-probabilidad-de-una-variable-continua" class="nav-link" data-scroll-target="#integrabilidad-y-función-de-probabilidad-de-una-variable-continua">Integrabilidad y Función de probabilidad de una variable continua</a>
+  <ul class="collapse">
+  <li><a href="#ejemplo-de-la-clase" id="toc-ejemplo-de-la-clase" class="nav-link" data-scroll-target="#ejemplo-de-la-clase">Ejemplo de la clase</a></li>
+  <li><a href="#otra-manera-pero-con-distribución-uniforme" id="toc-otra-manera-pero-con-distribución-uniforme" class="nav-link" data-scroll-target="#otra-manera-pero-con-distribución-uniforme">Otra manera pero con distribución Uniforme</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#importación-con-otros-formatos-de-base-de-datos" id="toc-importación-con-otros-formatos-de-base-de-datos" class="nav-link" data-scroll-target="#importación-con-otros-formatos-de-base-de-datos">Importación con otros formatos de base de datos</a>
+  <ul class="collapse">
+  <li><a href="#el-mismo-resultado-pero-ahora-con-porcentajes-decimales" id="toc-el-mismo-resultado-pero-ahora-con-porcentajes-decimales" class="nav-link" data-scroll-target="#el-mismo-resultado-pero-ahora-con-porcentajes-decimales">El mismo resultado pero ahora con porcentajes (decimales):</a></li>
+  <li><a href="#distribución-de-los-casados-como-es-su-sentimiento" id="toc-distribución-de-los-casados-como-es-su-sentimiento" class="nav-link" data-scroll-target="#distribución-de-los-casados-como-es-su-sentimiento">Distribución de los casados como es su sentimiento:</a></li>
+  <li><a href="#tabla-de-contingencia-cuenta-cuantas-parejas-de-casados-tienen-hijos" id="toc-tabla-de-contingencia-cuenta-cuantas-parejas-de-casados-tienen-hijos" class="nav-link" data-scroll-target="#tabla-de-contingencia-cuenta-cuantas-parejas-de-casados-tienen-hijos">Tabla de contingencia: Cuenta cuantas parejas de casados tienen hijos}</a></li>
+  <li><a href="#subconjuntos-con-filtros" id="toc-subconjuntos-con-filtros" class="nav-link" data-scroll-target="#subconjuntos-con-filtros">Subconjuntos con filtros</a></li>
+  </ul></li>
+  <li><a href="#correlación" id="toc-correlación" class="nav-link" data-scroll-target="#correlación">Correlación</a>
+  <ul class="collapse">
+  <li><a href="#correlación-entre-una-variable-categorica-y-una-continua" id="toc-correlación-entre-una-variable-categorica-y-una-continua" class="nav-link" data-scroll-target="#correlación-entre-una-variable-categorica-y-una-continua">Correlación entre una variable categorica y una continua</a></li>
+  </ul></li>
+  <li><a href="#datos-de-la-tabla-de-la-normal-estándar-y-gráficos-generales" id="toc-datos-de-la-tabla-de-la-normal-estándar-y-gráficos-generales" class="nav-link" data-scroll-target="#datos-de-la-tabla-de-la-normal-estándar-y-gráficos-generales">Datos de la tabla de la Normal estándar y gráficos generales</a>
+  <ul class="collapse">
+  <li><a href="#zonas-de-rechazo-de-hipótesis" id="toc-zonas-de-rechazo-de-hipótesis" class="nav-link" data-scroll-target="#zonas-de-rechazo-de-hipótesis">Zonas de rechazo de hipótesis</a></li>
+  <li><a href="#de-la-función-de-distribución-acumulada-fda" id="toc-de-la-función-de-distribución-acumulada-fda" class="nav-link" data-scroll-target="#de-la-función-de-distribución-acumulada-fda">De la función de distribución acumulada (FDA)</a>
+  <ul class="collapse">
+  <li><a href="#grafica-de-la-fda" id="toc-grafica-de-la-fda" class="nav-link" data-scroll-target="#grafica-de-la-fda">Grafica de la FDA</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">3: Distribución de datos</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,70]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHlmZmppMHZ5NGF1eWJwZXhrd2Rub2pkdGxyNjNoa2IyNWV3eDRpNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/viw9Ahh1Hgf682Yfmq/giphy-downsized.gif" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p>Las distribuciones son <strong>fundamentales</strong> en diversos ámbitos, desde la estadística hasta la informática, debido a su capacidad para modelar y analizar grandes conjuntos de datos de manera eficiente. Al agrupar datos en categorías o rangos específicos, las distribuciones nos permiten identificar patrones, tendencias y anomalías. Esto resulta invaluable para tomar decisiones informadas, optimizar procesos y realizar predicciones.</p>
+</div>
+</div>
+</div>
+<section id="resumen" class="level1">
+<h1>Resumen</h1>
+<p>Para esta parte se muestra la parte de funciones en <strong>R</strong>, revisamos algunos aspectos adicionales de la <strong>distribución de una variable</strong>. Luego se toma como referencia la importación desde un archivo distinto a las tradicionales bases de <strong>Excel</strong> tomando una base de archivo tipo dta (STATA). Adicionalmente, se hace uso del grupo de variables <em>categóricas</em> o como la gran mayoría de programas denomina como <em>factores</em>. Finalmente hacemos algunos ejemplos que tienen que ver con inferencia estadística y el uso de tablas de distribución directamente en el lenguaje de programación.</p>
+</section>
+<section id="funciones-en-r" class="level1">
+<h1>Funciones en R</h1>
+<p>Las funciones nos permiten de alguna forma escribir, armar y hasta crear indicadores que el software no trae consigo instalado. Es el caso si deseamos tener el promedio de una variable aleatoria.</p>
+<p>La estructura de una <code>funtion</code> (función) en <span style="color:lightblue"> <strong>R</strong> </span> tiene por lo menos los siguientes elementos:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mi_función<span class="ot">&lt;-</span> <span class="cf">function</span>(NOMBRE_VARIABLE){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Operación que se desea hacer en NOMBRE_VARIABLE y despues calcular el <span class="fu">valor</span> (VALUE)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>VALUE</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Miremos un caso de esto. Digamos que queremos crear <span class="math inline">\(E(x)\)</span> en <strong>R</strong>. Para esto entonces tomamos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>media<span class="ot">&lt;-</span><span class="cf">function</span>(x){</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  I<span class="ot">&lt;-</span><span class="fu">sum</span>(x) <span class="co"># La sumatoria de los elementos</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  n<span class="ot">&lt;-</span><span class="fu">length</span>(x) <span class="do">## El tamaño muestral</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  I<span class="sc">/</span>n</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Al crearla y mirar su uso, vamos a encontrar:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">15</span>,<span class="dv">18</span>,<span class="dv">19</span>,<span class="dv">21</span>,<span class="dv">23</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">media</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 19.2</code></pre>
+</div>
+</div>
+<p>Y notamos que tenemos el resultado de una función que me permite hallar el promedio o valor en este caso de 19.2 para cierta variable.</p>
+</section>
+<section id="de-las-funciones-de-probabilidad" class="level1">
+<h1>De las funciones de probabilidad</h1>
+<p>Recuerde el lanzamiento de un dado</p>
+<p><img src="images/dado.gif" class="img-fluid"></p>
+<p>En <em>R</em> lanzar un dado puede darse de la siguiente manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12345</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># La opción de 1 es para una solo lanzamiento (resultado) </span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+</div>
+<p>Se obtiene uno de los resultados para eso. Si por algún motivo deseamos tener su distribución, entonces tenemos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos los valores de repetición una seis veces </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>probabilidad <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="dv">6</span>) </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráficamos</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(probabilidad,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Resultados de lanzar un dado"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Distribución de probabilidad"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/cond-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>También podemos tener una probabilidad acumulada de estos eventos a partir de:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tomamos lo anterior </span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>probabilidad_acum <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(probabilidad) </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Luego gráficamos nuevamente</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(probabilidad_acum, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Resultados"</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Distribución acumulada de probabilidad"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/acum-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Podemos hacerlo de tipo “Bernoulli” como cuando lanzamos una moneda:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">"Cara"</span>, <span class="st">"Sello"</span>), <span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Cara"</code></pre>
+</div>
+</div>
+<p>La distribución nos permite conocer el comportamiento final de un evento, sobre todo si se repite. Asuma ahora que queremos saber el <strong>valor esperado</strong> o la media (promedio de la variable) <span class="math inline">\(E(X)\)</span> de haber lanzado unas cien mil veces un dado.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Promedio del lanzamiento de un dado</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Semilla de replicación</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Posibles tres primeros valores</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">3</span>, <span class="at">replace =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3 6 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Promedio con 100 mil lanzamientos</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">100000</span>, <span class="at">replace =</span> T))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.49492</code></pre>
+</div>
+</div>
+<section id="integrabilidad-y-función-de-probabilidad-de-una-variable-continua" class="level2">
+<h2 class="anchored" data-anchor-id="integrabilidad-y-función-de-probabilidad-de-una-variable-continua">Integrabilidad y Función de probabilidad de una variable continua</h2>
+<p>-<em>Recuerde en clases</em>- que si queríamos conocer la función de probabilidad de una variable continua como (x) entonces es posible plantear mediante una <strong>integral</strong> y calcular el área bajo la curva de una función continua:</p>
+<p><span class="math display">\[\int_{a}^{b} f (x) dx= P( a \leq x\leq b )\]</span> Todo lo anterior es con la posibilidad de conocer cual es la probabilidad de que <span class="math inline">\((x)\)</span> se encuentre en cierto rango de valores entre <span class="math inline">\(a\)</span> y <span class="math inline">\(b\)</span> siendo estos los límites inferiores y superiores de la integral. En <strong>R</strong> podemos implementarlo de la siguiente manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">integrate</span>(<span class="cf">function</span>(x) x, <span class="at">lower =</span> <span class="dv">0</span>, <span class="at">upper =</span> <span class="dv">1</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Lower es el limite inferior y upper el superior</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Procedemos hallar la probabilidad que <span class="math inline">\(f(x)=\frac{1}{x^2}\)</span> se encuentre entre el <em>límite inferior</em> de <span class="math inline">\(a=1\)</span> y el <em>límite superior</em> de <span class="math inline">\(b=\infty^+\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Hallar el área bajo la curva</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>area <span class="ot">&lt;-</span> <span class="fu">integrate</span>(<span class="cf">function</span>(x) <span class="dv">1</span><span class="sc">/</span>x<span class="sc">^</span><span class="dv">2</span>, <span class="at">lower =</span> <span class="dv">1</span>, <span class="at">upper =</span> <span class="cn">Inf</span>)<span class="sc">$</span>value</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>area </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<section id="ejemplo-de-la-clase" class="level3">
+<h3 class="anchored" data-anchor-id="ejemplo-de-la-clase">Ejemplo de la clase</h3>
+<p>Para el ejemplo de la clase, podemos tomar entonces:</p>
+<p><span class="math display">\[f(x)=\begin{cases} \frac{1}{40000}&amp; si  &amp; 10000 \leq x \leq 50000 \\ 0&amp; si  &amp; ocurre\; lo\; contrario\end{cases}\]</span></p>
+<p>Calcular:</p>
+<ul>
+<li>La probabilidad que los empleados consuman en este mes exactamente 30000 litros de gasolina, <span class="math inline">\(p(x=30000)\)</span>:</li>
+</ul>
+<p>Primero creamos una función pequeña (esta es la que nos permite) trabajar la integral con la opción de <code>Vectorize</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Como se trata de una constante hay que vectorizar</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>fp <span class="ot">&lt;-</span> <span class="cf">function</span>(x){<span class="dv">1</span><span class="sc">/</span><span class="dv">40000</span>}</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>Vfp <span class="ot">&lt;-</span> <span class="fu">Vectorize</span>(fp)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>e1 <span class="ot">&lt;-</span> <span class="fu">integrate</span>(Vfp, <span class="at">lower =</span> <span class="dv">30000</span>, <span class="at">upper =</span> <span class="dv">30000</span>)<span class="sc">$</span>value</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>e1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<ul>
+<li>De que consuman por lo menos 30000 litros, <span class="math inline">\(P (x \geq 30000)\)</span>:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>e2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">integrate</span>(Vfp, <span class="at">lower =</span> <span class="dv">10000</span>, <span class="at">upper =</span> <span class="dv">30000</span>)<span class="sc">$</span>value</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>e2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5</code></pre>
+</div>
+</div>
+<ul>
+<li>La probabilidad que consuman entre 20000 y 30000 litros de gasolina, <span class="math inline">\(P(20000 \leq x \leq 30000)\)</span>:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>e3 <span class="ot">&lt;-</span> <span class="fu">integrate</span>(Vfp, <span class="at">lower =</span> <span class="dv">20000</span>, <span class="at">upper =</span> <span class="dv">30000</span>)<span class="sc">$</span>value</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>e3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.25</code></pre>
+</div>
+</div>
+<p>Encontramos cada uno de los valores en <strong>R</strong> sin requerir de alguna calculadora en particular.</p>
+</section>
+<section id="otra-manera-pero-con-distribución-uniforme" class="level3">
+<h3 class="anchored" data-anchor-id="otra-manera-pero-con-distribución-uniforme">Otra manera pero con distribución Uniforme</h3>
+<p>Cada distribución de probabilidad que maneja <strong>R</strong> tiene cuatro funciones básicas cuyos nombres consisten en un prefijo seguido del nombre de la <strong>distribución</strong>. Como ejemplo, miremos la distribución normal. El nombre de las cuatro funciones asociadas a la distribución normal es <code>norm</code>. Los cuatro prefijos son:</p>
+<ul>
+<li>d de “densidad” - función de probabilidad / función de densidad de probabilidad</li>
+<li>p de “probabilidad” - función de distribución acumulativa</li>
+<li>q de “cuantil” - función de cuantil (función de distribución acumulativa inversa)</li>
+<li>r de “random” - generador de números aleatorios</li>
+</ul>
+<p>Así, para la distribución normal tenemos las funciones de <strong>R</strong> como: dnorm(), pnorm(), qnorm() y rnorm().</p>
+<p>La función de <strong>R</strong> conocida como <code>punif</code> permite extraer los valores de la probabilidad de una <em>distribución uniforme</em>. Recuerde que estas pueden ser:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">runif</span>(<span class="at">n =</span> <span class="dv">30</span>, <span class="at">min =</span> <span class="dv">150</span>, <span class="at">max =</span> <span class="dv">370</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 213.2671 323.4271 239.9749 344.2638 356.9028 160.0224 266.1832 346.3322
+ [9] 271.3157 250.4552 360.5033 249.7335 299.0655 275.9793 172.6434 347.9615
+[17] 204.1393 159.2531 222.1426 359.9908 345.6986 302.4167 290.9115 368.7394
+[25] 294.2553 305.8767 269.6945 280.7112 213.6151 182.3650</code></pre>
+</div>
+</div>
+<p>Y para graficar con tres (3) escenarios posibles se puede tener:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Una fila, tres columnas como opción de gráfico</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.5</span>, <span class="fl">1.5</span>, <span class="fl">0.01</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="co"># n = 10</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">runif</span>(<span class="dv">10</span>), <span class="at">main =</span> <span class="st">"n = 100"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>, <span class="fl">1.25</span>),</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dunif</span>(x), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="co"># n = 1000</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">runif</span>(<span class="dv">1000</span>), <span class="at">main =</span> <span class="st">"n = 10000"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>, <span class="fl">1.25</span>),</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dunif</span>(x), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="co"># n = 100000</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">runif</span>(<span class="dv">100000</span>), <span class="at">main =</span> <span class="st">"n = 1000000"</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.2</span>, <span class="fl">1.25</span>),</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">prob =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dunif</span>(x), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/sim1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Volvemos a una fila y una columna para la opción default de R</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>De vuelta al <span style="color:red">ejercicio de clase</span>, podemos usar entonces la opción de <code>punif</code> para obtener resultados sin hacer uso de las funciones de interacción:</p>
+<ul>
+<li>Caso 1: <em>Exactamente 30 mil litros de gasolina</em></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Lower.tail TRUE es el lado de la probabilidad (x&lt;=)</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>h<span class="ot">=</span><span class="fu">punif</span>(<span class="dv">30000</span>, <span class="at">min=</span><span class="dv">10000</span>, <span class="at">max=</span><span class="dv">50000</span>, <span class="at">lower.tail=</span>T)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>j<span class="ot">=</span><span class="fu">punif</span>(<span class="dv">30000</span>, <span class="at">min=</span><span class="dv">10000</span>, <span class="at">max=</span><span class="dv">50000</span>, <span class="at">lower.tail=</span>F)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>h<span class="sc">-</span>j</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<ul>
+<li>Caso 2: <em>Por lo menos 30000 litros de gasolina</em></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">punif</span>(<span class="dv">30000</span>, <span class="at">min=</span><span class="dv">10000</span>, <span class="at">max=</span><span class="dv">50000</span>, <span class="at">lower.tail=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5</code></pre>
+</div>
+</div>
+<ul>
+<li>Caso 3: <em>Entre 20000 y 30000</em></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Se usa de la siguiente manera</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Lower.tail FALSE es el lado de la probabilidad (&gt;)</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>h<span class="ot">=</span><span class="fu">punif</span>(<span class="dv">30000</span>, <span class="at">min=</span><span class="dv">10000</span>, <span class="at">max=</span><span class="dv">50000</span>, <span class="at">lower.tail=</span>F)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>l<span class="ot">=</span><span class="fu">punif</span>(<span class="dv">20000</span>, <span class="at">min=</span><span class="dv">10000</span>, <span class="at">max=</span><span class="dv">50000</span>, <span class="at">lower.tail=</span>T)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>h<span class="sc">-</span>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.25</code></pre>
+</div>
+</div>
+<p>Replicando los resultados anteriormente obtenidos. En resumen hay distintas maneras de llegar a obtener un <span style="color:blue"><strong>Resultado</strong></span> de distintas formas posibles.</p>
+</section>
+</section>
+</section>
+<section id="importación-con-otros-formatos-de-base-de-datos" class="level1">
+<h1>Importación con otros formatos de base de datos</h1>
+<p>Para esta parte se hará uso de una data brindada por el conjunto de dataset del libro de Wooldridge <em>Introducción a la econometría</em>. Las etiquetas se encuentran en ingles, pero nos dice lo siguiente:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="images/C1.PNG" class="img-fluid figure-img" style="width:70.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A continuación procedemos a importar con el paquete <code>haven</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Base de datos que va a usarse</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>datos_asuntos <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">"datos asuntos.dta"</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Vista Preliminar</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(datos_asuntos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>En el análisis de datos en frecuencias y porcentajes, es bueno tener presente los comandos de <code>table, prop.table</code>, serán de ayuda para decirnos la manera en como están tabulados y distribuidos los datos que estamos analizando.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generamos "Factores" a las etiquetas de una variable</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>haskids <span class="ot">&lt;-</span> <span class="fu">factor</span>(datos_asuntos<span class="sc">$</span>kids,<span class="at">labels=</span><span class="fu">c</span>(<span class="st">"no"</span>,<span class="st">"si"</span>))</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>mlab <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Muy Infeliz"</span>,<span class="st">"Infeliz"</span>,<span class="st">"Regular"</span>,<span class="st">"Feliz"</span>, <span class="st">"Muy feliz"</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>marriage <span class="ot">&lt;-</span> <span class="fu">factor</span>(datos_asuntos<span class="sc">$</span>ratemarr, <span class="at">labels=</span>mlab)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de frecuencias de la variable tener hijos:</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(haskids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>haskids
+ no  si 
+171 430 </code></pre>
+</div>
+</div>
+<p>Que informa cuantos de los encuestados tienen hijos, para este caso son de 430 que los tienen.</p>
+<section id="el-mismo-resultado-pero-ahora-con-porcentajes-decimales" class="level3">
+<h3 class="anchored" data-anchor-id="el-mismo-resultado-pero-ahora-con-porcentajes-decimales">El mismo resultado pero ahora con porcentajes (decimales):</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(haskids))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>haskids
+       no        si 
+0.2845258 0.7154742 </code></pre>
+</div>
+</div>
+<p>La salida la estipula el investigador, si deseea en número o en defecto con decimales y porcentaje.</p>
+</section>
+<section id="distribución-de-los-casados-como-es-su-sentimiento" class="level3">
+<h3 class="anchored" data-anchor-id="distribución-de-los-casados-como-es-su-sentimiento">Distribución de los casados como es su sentimiento:</h3>
+<p>Veamos un nuevo ejemplo, pero usando la variable de casado y que tan feliz o infeliz se siente despues de haberse casado.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(marriage))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>marriage
+Muy Infeliz     Infeliz     Regular       Feliz   Muy feliz 
+  0.0266223   0.1098170   0.1547421   0.3227953   0.3860233 </code></pre>
+</div>
+</div>
+<p>Si observa, un 38% de los encuestados se encuentra muy felizmente casado(a) con su pareja y en pocos porcentajes se encuentran descontentos.</p>
+</section>
+<section id="tabla-de-contingencia-cuenta-cuantas-parejas-de-casados-tienen-hijos" class="level3">
+<h3 class="anchored" data-anchor-id="tabla-de-contingencia-cuenta-cuantas-parejas-de-casados-tienen-hijos">Tabla de contingencia: Cuenta cuantas parejas de casados tienen hijos}</h3>
+<p>Es posible hacer <strong>cruces</strong> de variables para hacer análisis un poco mas sofisticados y ver que incidencia existe uno con el otro. Haremos una visualización con totales por filas y columnas y ver si los hijos tienen alguna incidencia en el sentimiento de felicidad en los casados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>(countstab <span class="ot">&lt;-</span> <span class="fu">table</span>(marriage,haskids))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             haskids
+marriage       no  si
+  Muy Infeliz   3  13
+  Infeliz       8  58
+  Regular      24  69
+  Feliz        40 154
+  Muy feliz    96 136</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Entre casados "marriage" (p.e. Análisis por filas):</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(countstab, <span class="at">margin=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             haskids
+marriage             no        si
+  Muy Infeliz 0.1875000 0.8125000
+  Infeliz     0.1212121 0.8787879
+  Regular     0.2580645 0.7419355
+  Feliz       0.2061856 0.7938144
+  Muy feliz   0.4137931 0.5862069</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Entre casados que poseen "haskids"  (p.e. Análisis por Columnas):</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.table</span>(countstab, <span class="at">margin=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             haskids
+marriage              no         si
+  Muy Infeliz 0.01754386 0.03023256
+  Infeliz     0.04678363 0.13488372
+  Regular     0.14035088 0.16046512
+  Feliz       0.23391813 0.35813953
+  Muy feliz   0.56140351 0.31627907</code></pre>
+</div>
+</div>
+<p>Siempre es importante la opción de p.e <strong>margin=1</strong> ya que nos muestra resultados por filas y la parte de <strong>margin=2</strong> u opciones nos mostrará la parte para hacer análisis por columnas dentro de una categoría. Con esto podemos mirar que aquellos que tienen hijos posiblemente tienen casos mas complejos en el hogar y que puede llevar a separación.</p>
+</section>
+<section id="subconjuntos-con-filtros" class="level2">
+<h2 class="anchored" data-anchor-id="subconjuntos-con-filtros">Subconjuntos con filtros</h2>
+<p>Muchas veces se debe filtrar la base de datos original y convertirla en una base mas pequeña. Para esto, se requiere una condición o característica esencial de interés del investigador.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Base</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>datos_asuntos</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 601 × 19
+      id  male   age yrsmarr  kids relig  educ occup ratemarr naffairs affair
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+ 1     4     1    37   10        0     3    18     7        4        0      0
+ 2     5     0    27    4        0     4    14     6        4        0      0
+ 3     6     1    27    1.5      0     3    18     4        4        3      1
+ 4    11     0    32   15        1     1    12     1        4        0      0
+ 5    12     0    27    4        1     3    17     1        5        3      1
+ 6    16     1    57   15        1     5    18     6        5        0      0
+ 7    23     1    22    0.75     0     2    17     6        3        0      0
+ 8    29     0    32    1.5      0     2    17     5        5        0      0
+ 9    43     1    37   15        1     5    18     6        2        7      1
+10    44     0    22    0.75     0     2    12     1        3        0      0
+# ℹ 591 more rows
+# ℹ 8 more variables: vryhap &lt;dbl&gt;, hapavg &lt;dbl&gt;, avgmarr &lt;dbl&gt;, unhap &lt;dbl&gt;,
+#   vryrel &lt;dbl&gt;, smerel &lt;dbl&gt;, slghtrel &lt;dbl&gt;, notrel &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Se hace uso del comando "Subset" para seleccionar un subconjunto de una base </span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="co"># para aquellas observaciones cuya educación en años es mayor o igual a 10.</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(datos_asuntos, educ<span class="sc">&gt;=</span><span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 594 × 19
+      id  male   age yrsmarr  kids relig  educ occup ratemarr naffairs affair
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+ 1     4     1    37   10        0     3    18     7        4        0      0
+ 2     5     0    27    4        0     4    14     6        4        0      0
+ 3     6     1    27    1.5      0     3    18     4        4        3      1
+ 4    11     0    32   15        1     1    12     1        4        0      0
+ 5    12     0    27    4        1     3    17     1        5        3      1
+ 6    16     1    57   15        1     5    18     6        5        0      0
+ 7    23     1    22    0.75     0     2    17     6        3        0      0
+ 8    29     0    32    1.5      0     2    17     5        5        0      0
+ 9    43     1    37   15        1     5    18     6        2        7      1
+10    44     0    22    0.75     0     2    12     1        3        0      0
+# ℹ 584 more rows
+# ℹ 8 more variables: vryhap &lt;dbl&gt;, hapavg &lt;dbl&gt;, avgmarr &lt;dbl&gt;, unhap &lt;dbl&gt;,
+#   vryrel &lt;dbl&gt;, smerel &lt;dbl&gt;, slghtrel &lt;dbl&gt;, notrel &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Se puede adicionar a una nueva base con un nombre nuevo </span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>mibase<span class="ot">&lt;-</span> <span class="fu">subset</span>(datos_asuntos, educ<span class="sc">&gt;=</span><span class="dv">10</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Mirar en formato tradicional   </span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(mibase)</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Un subset con variable cualitativa (tipo filtro) cuando la pareja </span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="co">#'si' tiene hijos</span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(datos_asuntos, kids<span class="sc">==</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 430 × 19
+      id  male   age yrsmarr  kids relig  educ occup ratemarr naffairs affair
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+ 1    11     0    32      15     1     1    12     1        4        0      0
+ 2    12     0    27       4     1     3    17     1        5        3      1
+ 3    16     1    57      15     1     5    18     6        5        0      0
+ 4    43     1    37      15     1     5    18     6        2        7      1
+ 5    45     1    57      15     1     2    14     4        4        0      0
+ 6    47     0    32      15     1     4    16     1        2        0      0
+ 7    50     1    37      15     1     2    20     7        2        0      0
+ 8    53     0    32      10     1     3    17     5        2       12      1
+ 9    55     1    27       4     1     4    18     6        4        0      0
+10    64     1    47      15     1     5    17     6        4        0      0
+# ℹ 420 more rows
+# ℹ 8 more variables: vryhap &lt;dbl&gt;, hapavg &lt;dbl&gt;, avgmarr &lt;dbl&gt;, unhap &lt;dbl&gt;,
+#   vryrel &lt;dbl&gt;, smerel &lt;dbl&gt;, slghtrel &lt;dbl&gt;, notrel &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="correlación" class="level1">
+<h1>Correlación</h1>
+<p>La correlación es un índice estadístico bastante utilizado para establecer las correlaciones entre dos variables <span class="math inline">\(X,Y\)</span>. Su importancia radica en la interpretación de la fuerza y <strong>magnitud</strong> que esta nos brinda en su intervalo <span class="math inline">\(\left[ -1\leq r \leq 1 \right]\)</span>. Entre mas cercano a los extremos mucho <strong>mejor</strong> y menor <strong>dispersión</strong> en los datos vamos a encontrar.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Un gráfico de correlación</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> datos_asuntos<span class="sc">$</span>yrsmarr, <span class="at">y =</span> datos_asuntos<span class="sc">$</span>age, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylab =</span> <span class="st">"Edad de la persona"</span>, </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">xlab =</span>  <span class="st">"Años de casados"</span>, </span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">main =</span> <span class="st">"Correlación entre edad y años de matrimonio"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/palan-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Lo mejor siempre será comparar dos variables cuantitativas, para este caso, el gráfico nos muestra como distintos niveles de edad poseen en común un mismo número de años casados. Es de esperar que como hipótesis se tuviera que <em>en la medida que hay mayor nivel de edad mayor fuera el número de años de matrimonio que tuviera la persona</em>.</p>
+<p>Hallar el valor de la <strong>correlación</strong> entre ambas variables, se puede hacer con el comando <code>cor</code> de la siguiente forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Para correlación entre variables ##</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(datos_asuntos)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Note que al usar arrach no es necesario el signo peso</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(yrsmarr,educ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.04000272</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Formulas covarianza y varianza </span></span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(age,educ) <span class="co"># Solo interesa el signo</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.003747</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(age)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 86.28109</code></pre>
+</div>
+</div>
+<p>También, hay paquetes como <code>Hmisc</code> que contiene un grupo de funciones <em>estadísticas</em> que permiten obtener este tipo de correlaciones. Veamos un ejemplo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Definimos la muestra</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>datos<span class="ot">=</span> <span class="fu">data.frame</span>(notas_c<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.11</span>,<span class="fl">4.15</span>,<span class="fl">3.18</span>,<span class="fl">3.45</span>,<span class="fl">4.7</span>),</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>                  notas_e<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">2.40</span>,<span class="fl">4.30</span>,<span class="fl">3.30</span>,<span class="fl">3.6</span>,<span class="fl">4.9</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Que son las notas que obtuvo una persona en Cálculo y en Economía Colombiana. Hacemos uso entonces del paquete <code>Hmisc</code> (debimos haberlo instalado antes)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Hmisc)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rcorr</span>(datos<span class="sc">$</span>notas_c, datos<span class="sc">$</span>notas_e, <span class="at">type=</span> <span class="st">"pearson"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x y
+x 1 1
+y 1 1
+
+n= 5 
+
+
+P
+  x  y 
+x     0
+y  0   </code></pre>
+</div>
+</div>
+<p>Y encontramos entonces que la correlación es de <code>cero</code> (0). Las variables no tienen <span style="color:red"> <strong>relación</strong></span> alguna entre ellas. Que por el contrario. Son bastantes independientes.</p>
+<p>Si por otro lado queremos la correlación de tipo “Spearman”, entonces simplemente cambiamos la parte correspondiente a <code>type</code> y tenemos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rcorr</span>(datos<span class="sc">$</span>notas_c, datos<span class="sc">$</span>notas_e, <span class="at">type=</span> <span class="st">"spearman"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  x y
+x 1 1
+y 1 1
+
+n= 5 
+
+
+P
+  x  y 
+x     0
+y  0   </code></pre>
+</div>
+</div>
+<p>Brindando el mismo resultado de cero (0), que viene a ser mas o menos similar al anterior. Recuerde que en econometría se hace mas uso del tipo de correlación <strong>Pearson</strong>.</p>
+<section id="correlación-entre-una-variable-categorica-y-una-continua" class="level2">
+<h2 class="anchored" data-anchor-id="correlación-entre-una-variable-categorica-y-una-continua">Correlación entre una variable categorica y una continua</h2>
+<p>En algunas ocasiones podemos mirar, si una <em>característica</em> incide sobre la correlación de alguna variable. Digamos que queremos mirar si haber tomado café/tinto incide en algo o tiene relación en el rendimiento de una persona en un examen de calificación. Tome en consideración lo siguiente:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>tinto<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>notas_Econ<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="fl">4.3</span>,<span class="fl">3.7</span>,<span class="fl">2.3</span>,<span class="fl">2.2</span>,<span class="fl">2.1</span>,<span class="fl">4.41</span>,<span class="fl">4.46</span>,<span class="fl">3.72</span>,<span class="fl">3.33</span>,<span class="fl">3.50</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculamos la correlación Bi-serial</span></span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(tinto, notas_Econ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  tinto and notas_Econ
+t = 6.1518, df = 8, p-value = 0.0002735
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.6518232 0.9784589
+sample estimates:
+      cor 
+0.9085684 </code></pre>
+</div>
+</div>
+<p>Lo que nos arroja un <strong>resultado</strong> de 0.90 de correlación que interpretamos como una correlación <strong>alta</strong> cuando tomamos café y enfrentamos una prueba. Cuando esa persona tomó café tuvo mejores resultados que cuando no lo hizo -<em>Recuerde que son correlaciones y implica causalidad</em>-</p>
+</section>
+</section>
+<section id="datos-de-la-tabla-de-la-normal-estándar-y-gráficos-generales" class="level1">
+<h1>Datos de la tabla de la Normal estándar y gráficos generales</h1>
+<p>En estadística se aprendió a realizar planteamientos que hacen uso de las distintas funciones de distribución. Una de ellas, o la mas importante de todas de acuerdo a su aplicación es la que suele representarse como <span class="math inline">\(N \sim (\mu, \sigma^{2})\)</span> y con ella hacer uso de su formula mas simple que viene a ser: <span class="math display">\[(d_{i})=\frac{X-\mu}{\sigma}\]</span> Donde <span class="math inline">\(\mu\)</span> hace referencia a la media y <span class="math inline">\(\sigma^{2}\)</span> a la varianza. La variable <span class="math inline">\(X\)</span> simplemente viene a ser <em>la variable en cuestión</em>. Revise el ejemplo del curso, cuando el profesor le pedía hallar la probabilidad de que <span class="math inline">\(Y\leq 2\)</span> cuando <span class="math inline">\(N \sim (1,4)\)</span>. El comando <code>pnorm</code> hace referencia al parámetro <span class="math inline">\(\Phi\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para conocer el valor de la probabilidad</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6914625</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># También se puede usar directamente cuando se tiene </span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="co"># media (1) y desviación estándar (2)</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">2</span>, <span class="at">mean=</span><span class="dv">1</span>,<span class="at">sd=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6914625</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora para realizar una gráfica general (sirve para pruebas de hipótesis)</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="fl">1.96</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="sc">-</span><span class="fl">1.96</span>) <span class="co">#Área de probabilidad entre dos valores</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9500042</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>x.valores <span class="ot">=</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">5</span>, <span class="at">length =</span> <span class="dv">1000</span>)</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>y.valores <span class="ot">=</span> <span class="fu">dnorm</span>(x.valores)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x.valores, y.valores, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">lty=</span><span class="dv">1</span>, <span class="at">xlab=</span><span class="st">"Valor Z"</span>, <span class="at">ylab=</span><span class="st">"Probabilidad"</span>, <span class="at">main=</span><span class="st">"Distribución Normal"</span>)</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fl">1.96</span>)</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="sc">-</span><span class="fl">1.96</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/norm223-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Otro ejemplo, es el siguiente para una función normal de una variable cuando <span class="math inline">\(Y\leq 2\)</span> con media de 0 y varianza de 1.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">5</span>,<span class="fl">0.1</span>) <span class="co">#Creamos los datos</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>hist <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="dv">1</span>) <span class="co">#Guardamos el histograma</span></span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, hist, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Desviación estándar"</span>, <span class="at">ylab=</span><span class="st">"Densidad de probabilidad"</span>,<span class="at">main=</span><span class="st">"Grafico de Densidad"</span>,</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">yaxs=</span><span class="st">"i"</span>) <span class="co"># yaxs="i" significa el límite del dato en el eje</span></span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(x[x <span class="sc">&lt;=</span> <span class="fl">2.0</span>], <span class="dv">2</span>), <span class="fu">c</span>(<span class="fu">dnorm</span>(x[x <span class="sc">&lt;=</span> <span class="dv">2</span>]), <span class="dv">0</span>), <span class="at">col=</span><span class="st">"lightblue"</span>)</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">0</span>, .<span class="dv">1</span>,<span class="st">"0.977"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/grafo256-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Si nuestro interés solo es mirar como se distribuye de forma normal un conjunto de datos que <span class="math inline">\(X\sim(\mu,\sigma^{2})\)</span>. También esta el comando de <code>qnorm</code> que permite desde el valor de la probabilidad de <span class="math inline">\(X\)</span> hallar el valor correspondiente a ésta.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Un ejemplo al 97% con media de cero y varianza de 1.</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.978</span>, <span class="at">mean =</span> <span class="dv">0</span>,<span class="at">sd=</span><span class="dv">1</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.014091</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Siempre usar desde 0.01 hasta 0.99</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Lo que nos da como resultado 2.014 que es el valor (X) (inicial) o número que representa la probabilidad del 97% cuando la media es de 0 y la desviación es 1, como es el caso de la gráfica anterior con el valor Y de los menores o iguales a 2.</p>
+<section id="zonas-de-rechazo-de-hipótesis" class="level2">
+<h2 class="anchored" data-anchor-id="zonas-de-rechazo-de-hipótesis">Zonas de rechazo de hipótesis</h2>
+<p>Muchas veces para los contrastes estadísticos tendremos que usar el <span class="math inline">\((\alpha)\)</span> o <strong>error de confianza</strong> para rechazar o no hipótesis nulas <span class="math inline">\((H_{0})\)</span>. El código para obtenerlo en <strong>R</strong> siempre tiene sus cosas, lo recomendable es que escriba el código totalmente y luego si <em>ejecute</em> seleccionando todo con la opción de <code>ctrl+enter</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">5</span>,<span class="dv">5</span>,<span class="fl">0.1</span>) <span class="co">#Creamos los datos (estos son aleatorios)</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>hist <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(x, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="dv">1</span>) <span class="co">#Guardamos el histograma</span></span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Toda esta parte a continuación debe correrla de un solo ``tajo'':</span></span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, hist, <span class="at">type=</span><span class="st">"l"</span>, <span class="at">xlab=</span><span class="st">"Desviación estándar"</span>, <span class="at">ylab=</span><span class="st">"Densidad de probabilidad"</span>,<span class="at">main=</span><span class="st">"Grafico de Densidad"</span>,</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a><span class="at">lty =</span> <span class="dv">1</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">yaxs=</span><span class="st">"i"</span>) <span class="co"># yaxs="i" significa el límite del dato en el eje</span></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(x[x <span class="sc">&gt;=</span> <span class="fl">1.96</span>], <span class="dv">2</span>), <span class="fu">c</span>(<span class="fu">dnorm</span>(x[x <span class="sc">&gt;=</span> <span class="fl">1.96</span>]), <span class="dv">0</span>), <span class="at">col=</span><span class="st">"gray"</span>)</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(x[x <span class="sc">&lt;=-</span><span class="fl">1.96</span>], <span class="sc">-</span><span class="dv">2</span>), <span class="fu">c</span>(<span class="fu">dnorm</span>(x[x <span class="sc">&lt;=</span> <span class="sc">-</span><span class="fl">1.96</span>]), <span class="dv">0</span>), <span class="at">col=</span><span class="st">"gray"</span>)</span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">0</span>, .<span class="dv">1</span>,<span class="st">"0.95"</span>)</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="sc">-</span><span class="dv">3</span>, .<span class="dv">05</span>,<span class="fu">expression</span>(alpha<span class="sc">==</span><span class="fl">0.025</span>), <span class="at">col =</span> <span class="st">"red"</span>)</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">3</span>, .<span class="dv">05</span>,<span class="fu">expression</span>(alpha<span class="sc">==</span><span class="fl">0.025</span>), <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/pruebahip-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>El análisis de <span class="math inline">\((\alpha)\)</span> hace referencia a los niveles específicos de los niveles de confianza de una prueba cualquiera, por ejemplo: recuerde cuando se tienen dos eventos, uno es <em>verdadero</em> con probabilidad (P) y otro <em>falso</em> con probabilidad (1-P), ambos son excluyentes y le piden que demuestre el resultado que se de uno de ellos. Para el caso de las <strong>Pruebas de hipótesis</strong> es lo mismo, una parte que es <em>cierta</em> o verdadera y la otra que es falsa. En econometría y estadística siempre se usa de tal forma que <span class="math inline">\((1-\alpha)\)</span> o (1-P) es la parte<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> de <span class="math inline">\(95\%\)</span> - <em>siendo el nivel estándar de las pruebas científicas</em> - y su contraste es <span class="math inline">\(\alpha\)</span> o es 5%. En otros casos - <em>mas exigentes</em>-, puede llegar a ser <span class="math inline">\((1-\alpha)=99\%\)</span> y por ende <span class="math inline">\(\alpha\)</span> será igual a <span class="math inline">\(1\%\)</span>.</p>
+<p>En el análisis de datos, al igual que en la econometría y en muchas partes, se debe siempre <span style="color:blue"> <strong>testear</strong> </span> o probar los resultados en el universo estadístico que brindan las distribuciones.</p>
+<p>Tomemos por ejemplo una distribución -recuerde que necesitamos de estas porque se convierten en el mapa a aproximar cuando realizamos estimaciones muestrales-.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generar datos</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5672</span>) <span class="co">#Una semilla de replicación para que a todos nos salga lo mismo</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rnorm</span>(<span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] -0.18400862 -1.05931512  1.50759363 -0.60075771  0.79107108 -0.44334303
+  [7] -0.35042110 -1.25450334  0.63799236  0.64631285 -0.14895577 -0.87483080
+ [13] -0.15824114  0.56376500 -1.34740602  0.91685198  2.26423302 -0.70910236
+ [19] -0.82977862 -0.89983410  1.37276199  0.85239574  0.49860312 -1.17692668
+ [25]  0.75194573 -0.08792311  0.65682396  1.52469404  0.71705327 -1.37207571
+ [31] -0.97292872  1.78510555 -1.31422047  3.06131557  0.19678032  0.78088015
+ [37]  0.75275186  1.61846625 -1.75956334 -0.05631070 -1.14023988  0.66007969
+ [43] -0.71299941  1.23366144 -0.25807622 -1.43845021 -1.36962926 -0.40745676
+ [49]  0.49351508 -0.61838224  1.10034077  2.33600094  1.30356426 -0.88262713
+ [55]  0.92618206  1.40416805 -1.20909561  0.25622506 -0.46374507  1.51006044
+ [61] -0.58142586 -0.98291735  1.99639339 -0.89036509  0.04713117 -0.16852734
+ [67] -0.62740703 -1.25127174 -2.00665347 -0.11183343  0.66415330 -1.29488126
+ [73]  0.68489035  0.99119783  0.69521727  0.09763780  1.74954562 -1.82436693
+ [79] -1.55433115 -0.02273659 -1.11844353  2.42255285 -1.73167894 -1.53284360
+ [85] -0.24999095 -2.02380378  0.29885479  1.54184598  0.13739446 -0.67621809
+ [91] -0.55691948 -0.45189730 -1.01214765  0.80377864 -0.17124248  0.41844004
+ [97]  0.70987117  0.29105856 -1.09294074  0.14208391</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Asignar a un vector</span></span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>y<span class="ot">&lt;-</span><span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Figura de histograma</span></span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(y, <span class="at">main=</span><span class="st">"Un histograma de la Dist. normal"</span>, <span class="at">ylab =</span> <span class="st">"Frecuencia de datos"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/pos-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>La forma en como se distribuyen los <strong>datos</strong> nos podrán “mapear” como lo hace un universo de observaciones que quizás no logremos tener (<em>por el alto costo de conseguir esa información o porque no exista suficiente espacio o memoria en nuestro ordenador</em>), sin embargo, a partir de eso podremos inferir lo que ocurre generalmente con las cosas.</p>
+<p>Hay datos que se distribuyen normal porque su<span style="color:blue"> <strong>naturaleza</strong> </span> es independiente y aleatoria, es por esto que se comportan de forma “Normal” o se distribuyen así. Por otro lado, podemos encontrar datos que se distribuyen de otra manera, es el caso de la distribución discreta de la binomial, como se muestra a continuación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Una gráfica para la distribución binomial</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Valores de x: Números del o al 10 con una secuencia</span></span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">10</span>)</span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Función para todos esos valores</span></span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>fx <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(x, <span class="dv">10</span>, <span class="fl">0.2</span>)</span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Tabla de (matriz) de valores</span></span>
+<span id="cb84-9"><a href="#cb84-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(x, fx) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       x           fx
+ [1,]  0 0.1073741824
+ [2,]  1 0.2684354560
+ [3,]  2 0.3019898880
+ [4,]  3 0.2013265920
+ [5,]  4 0.0880803840
+ [6,]  5 0.0264241152
+ [7,]  6 0.0055050240
+ [8,]  7 0.0007864320
+ [9,]  8 0.0000737280
+[10,]  9 0.0000040960
+[11,] 10 0.0000001024</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gráfico con distintas formas de las lineas</span></span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, fx, <span class="at">type=</span><span class="st">"h"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/bino-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, fx, <span class="at">type =</span> <span class="st">"c"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/bino-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, fx, <span class="at">type =</span> <span class="st">"l"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/bino-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Saber de las distribuciones nos permite resolver <span style="color:red"> <strong>problemas</strong> </span> como los que se presentan a continuación: Sea <span class="math inline">\(X\)</span> un conjunto de balotas de color verde que se pueden extraer de una bolsa que regularmente solo contiene un 15% de ese color. Con los siguientes parámetros: n=20 total de pelotas dentro de la bolsa y <span class="math inline">\(p=15\%=0.15\)</span>. Si queremos conocer la <strong>probabilidad</strong> de sacar 3 pelotas de color <span style="color:green"> <strong>verde</strong> </span>, debemos entonces hacer uso de una distribución. Todos sabemos que la probabilidad va en <span class="math inline">\(x \in \{0,1,2,\dots,20\}\)</span>, la propuesta de desarrollo es:</p>
+<p><span class="math display">\[f(x)=P(X=x) = \binom{n}{x} \cdot P^{x} \cdot (1-P)^{n-x}= \binom{20}{x} \cdot 0.15 \cdot (0.85)^{20-x}\]</span> La pregunta va en dirección de la probabilidad de sacar 3 balotas de color <span style="color:green"> <strong>verde</strong> </span>, lo que es:</p>
+<p><span class="math display">\[f(x)= \binom{20}{3} \cdot 0.15 \cdot (0.85)^{20-3}\]</span> En el Software <strong>R</strong> es muy fácil aplicar el comando <code>dbinom(x,n,p)</code> y tendremos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">3</span>,<span class="dv">20</span>,<span class="fl">0.15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2428289</code></pre>
+</div>
+</div>
+<p>Dándonos como resultado una probabilidad de 24.28% de sacar tres (3) pelotas de color <span style="color:green"> <strong>verde</strong> </span> en dicho experimento.</p>
+</section>
+<section id="de-la-función-de-distribución-acumulada-fda" class="level2">
+<h2 class="anchored" data-anchor-id="de-la-función-de-distribución-acumulada-fda">De la función de distribución acumulada (FDA)</h2>
+<p>La FDA es aquella que representa la probabilidad de que X tome al menos el valor de (x). Tenga presente lo siguiente:</p>
+<p><span class="math display">\[F(x)= P(X \leq x)\]</span> X puede tomar distintos valores muestrales. Suponga que X es el salario de una persona, la parte (x) puede ser 50000 o 100000 y así cualquier otro valor. Si queremos mirar por ejemplo, cual es la probabilidad de que X este entre a y b?, ya hacemos uso por ejemplo de <span class="math inline">\(P(a\leq X \leq b)\)</span>.</p>
+<p>Mire que si sabemos que <span class="math inline">\(X \sim (10, 24)\)</span>. podemos entonces preguntarnos: ¿Cuál es la probabilidad que X este (o tome valores) entre 6 y 12. Una respuesta para eso es</p>
+<p><span class="math display">\[\mu_{x}= \frac{6-10}{4.9}=\Phi \left( \frac{-4}{5} \right)\]</span> De forma similar es para el otro valor</p>
+<p><span class="math display">\[\mu_{x}= \frac{12-10}{4.9}=\Phi \left(\frac{2}{5} \right)\]</span> En <strong>R</strong> es sencillo entonces tener:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># De forma normal</span></span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">2</span><span class="sc">/</span><span class="dv">5</span>)<span class="sc">-</span><span class="fu">pnorm</span>(<span class="sc">-</span><span class="dv">4</span><span class="sc">/</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4435663</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Luego de forma directa</span></span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">12</span>,<span class="dv">10</span>,<span class="dv">5</span>)<span class="sc">-</span><span class="fu">pnorm</span>(<span class="dv">6</span>,<span class="dv">10</span>,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4435663</code></pre>
+</div>
+</div>
+<p>Y obtenemos el mismo resultado de acuerdo a lo que estemos hallando. La probabilidad en este casi es del 44.35%.</p>
+<section id="grafica-de-la-fda" class="level3">
+<h3 class="anchored" data-anchor-id="grafica-de-la-fda">Grafica de la FDA</h3>
+<p>Tanto los sucesos de una distribución binomial o normal siguen una distribución de la siguiente manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>x<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">2</span>,<span class="dv">15</span>)</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>Fx<span class="ot">&lt;-</span><span class="fu">pbinom</span>(x, <span class="dv">15</span>, <span class="fl">0.2</span>)</span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, Fx, <span class="at">type=</span><span class="st">"s"</span>)</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">pnorm</span>(x), <span class="sc">-</span><span class="dv">5</span>,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad03_files/figure-html/dbincda-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>El universo del comportamiento de las variables, nos permiten hacer inferencia de todo tipo.</p>
+
+
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Este criterio siempre va a depender del investigador y de los recursos con que cuenta.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
