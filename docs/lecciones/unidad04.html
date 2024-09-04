@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.555">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Guía de Econometría para R (Uninorte) - 4: Mínimos Cuadrados Ordinarios</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lecciones/unidad03.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Guía de Econometría para R (Uninorte) - 4: Mínimos Cuadrados Ordinarios">
+<meta property="og:description" content="Métodos cuantitativos en Econometría">
+<meta property="og:site_name" content="Guía de Econometría para R (Uninorte)">
+<meta name="twitter:title" content="Guía de Econometría para R (Uninorte) - 4: Mínimos Cuadrados Ordinarios">
+<meta name="twitter:description" content="Métodos cuantitativos en Econometría">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Guía de Econometría para R (Uninorte)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/keynes37"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/keynes37"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://carlosyanes.netlify.app/"> <i class="bi bi-globe" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad04.html">4: Mínimos Cuadrados Ordinarios</a></li></ol></nav>
+        <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guías de R para Econometría</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Parte 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1: Empecemos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2: Datos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3: Distribución de datos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad04.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">4: Mínimos Cuadrados Ordinarios</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#resumen" id="toc-resumen" class="nav-link active" data-scroll-target="#resumen">Resumen</a></li>
+  <li><a href="#pruebas-de-hipotesis" id="toc-pruebas-de-hipotesis" class="nav-link" data-scroll-target="#pruebas-de-hipotesis">Pruebas de hipotesis</a>
+  <ul class="collapse">
+  <li><a href="#valores-críticos" id="toc-valores-críticos" class="nav-link" data-scroll-target="#valores-críticos">Valores críticos</a></li>
+  <li><a href="#intervalos-de-confianza" id="toc-intervalos-de-confianza" class="nav-link" data-scroll-target="#intervalos-de-confianza">Intervalos de confianza</a>
+  <ul class="collapse">
+  <li><a href="#otras-opciones" id="toc-otras-opciones" class="nav-link" data-scroll-target="#otras-opciones">Otras opciones</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#modelo-de-regresión-simple" id="toc-modelo-de-regresión-simple" class="nav-link" data-scroll-target="#modelo-de-regresión-simple">Modelo de Regresión Simple</a>
+  <ul class="collapse">
+  <li><a href="#ingredientes-del-modelo" id="toc-ingredientes-del-modelo" class="nav-link" data-scroll-target="#ingredientes-del-modelo">Ingredientes del modelo</a>
+  <ul class="collapse">
+  <li><a href="#covarianza" id="toc-covarianza" class="nav-link" data-scroll-target="#covarianza">Covarianza</a></li>
+  <li><a href="#varianza" id="toc-varianza" class="nav-link" data-scroll-target="#varianza">Varianza</a></li>
+  <li><a href="#media-de-la-variable-dependiente-e-independiente" id="toc-media-de-la-variable-dependiente-e-independiente" class="nav-link" data-scroll-target="#media-de-la-variable-dependiente-e-independiente">Media de la variable dependiente e independiente</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#cálculos-manuales-de-los-coeficientes-de-mco-ols" id="toc-cálculos-manuales-de-los-coeficientes-de-mco-ols" class="nav-link" data-scroll-target="#cálculos-manuales-de-los-coeficientes-de-mco-ols">Cálculos manuales de los coeficientes de MCO (OLS)</a></li>
+  <li><a href="#regresión-estándar" id="toc-regresión-estándar" class="nav-link" data-scroll-target="#regresión-estándar">Regresión Estándar</a>
+  <ul class="collapse">
+  <li><a href="#otros-formatos-de-salida" id="toc-otros-formatos-de-salida" class="nav-link" data-scroll-target="#otros-formatos-de-salida">Otros formatos de salida</a></li>
+  <li><a href="#pruebas-de-hipótesis" id="toc-pruebas-de-hipótesis" class="nav-link" data-scroll-target="#pruebas-de-hipótesis">Pruebas de Hipótesis</a></li>
+  <li><a href="#criterio-de-rechazo" id="toc-criterio-de-rechazo" class="nav-link" data-scroll-target="#criterio-de-rechazo">Criterio de rechazo</a></li>
+  </ul></li>
+  <li><a href="#de-los-supuestos-m.c.o" id="toc-de-los-supuestos-m.c.o" class="nav-link" data-scroll-target="#de-los-supuestos-m.c.o">De los supuestos M.C.O</a>
+  <ul class="collapse">
+  <li><a href="#test-de-normalidad" id="toc-test-de-normalidad" class="nav-link" data-scroll-target="#test-de-normalidad">Test de Normalidad</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad04.html">4: Mínimos Cuadrados Ordinarios</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">4: Mínimos Cuadrados Ordinarios</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,70]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHdjMnhxYXNnbmtmOHpkdzNreW9uZG42MWJvbm9hYWUyY2hyNmxsbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/y0XAoHQPmv4CQ/giphy.gif" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p>Los modelos de Mínimos Cuadrados Ordinarios (MCO) son fundamentales en la econometría y estadística debido a su simplicidad y robustez. Estos modelos estiman la relación lineal entre variables, minimizando la suma de los errores cuadráticos, lo que permite obtener estimaciones insesgadas y eficientes bajo ciertas condiciones.</p>
+</div>
+</div>
+</div>
+<section id="resumen" class="level1">
+<h1>Resumen</h1>
+<p>En esta guía intentaremos trabajar la parte inferencial de la estadística para la construcción de intervalos de confianza, indispensables para las <strong>pruebas de hipótesis</strong>. Desde luego a partir de aquí se empieza la parte vital de lo que es la <strong>inferencia</strong> estadística. Luego de esa parte se comienza a dar uso al modelo de regresión <span style="color:blue"><strong>simple</strong></span>, que involucra la estimación <strong>causal</strong> de la variable X (explicativa) con la variable Y (dependiente) y desde luego obtener los estimadores respectivos.</p>
+</section>
+<section id="pruebas-de-hipotesis" class="level1">
+<h1>Pruebas de hipotesis</h1>
+<p>La validez de las estimaciones se dan a partir de las herramientas estadísticas que nos permiten determinar si algo es <strong><em>verdadero</em></strong> sobre todo para una muestra. Las pruebas de hipótesis surgen para eso.</p>
+<p>Tome por ejemplo que quisiéramos ver que la media (promedio) de la nota de los estudiantes de economía es de 3.5. Plantear esto en términos de hipótesis requerirá los siguientes elementos: Primero una parte nula - considérelo como el punto de partida- y que de ahora en adelante notaremos como <span class="math inline">\(H_0\)</span> y una parte <strong>alternativa</strong> que surge de lo que crea que va a suceder y que de cierta forma o manera le conviene a un investigador encontrar y la conoceremos de ahora en adelante como <span class="math inline">\(H_a\)</span>.</p>
+<p>Regresando a la parte del <em>ejemplo</em> de la nota, podriamos plantear eso como:</p>
+<p><span class="math display">\[\begin{aligned}
+H_0: &amp;\text{Estudiantes con promedio de 3.5} \\
+H_a: &amp;\text{Estudiantes con promedio diferente de 3.5}
+\end{aligned}\]</span></p>
+<p>Lo anterior puede re-expresarse de forma simplificada y en términos de inferencia como:</p>
+<p><span class="math display">\[\begin{aligned}
+H_0: &amp; \bar{x} = 3.5 \\
+H_a: &amp; \bar{x} \neq 3.5
+\end{aligned}\]</span></p>
+<p>La parte de <span class="math inline">\(\bar{x}\)</span> es la media o promedio de la variable aleatoria y queremos saber si es igual a 3.5 o por el contrario, es distinta a ese valor.</p>
+<p>Probar hipótesis hace que se requieran algunos elementos como el tipo de <strong>distribución</strong>, los valores <strong>críticos</strong> y por ende los <strong>intervalos de confianza</strong>.</p>
+<section id="valores-críticos" class="level2">
+<h2 class="anchored" data-anchor-id="valores-críticos">Valores críticos</h2>
+<p>De la existencia de los valores <strong>críticos</strong> podremos tener nuestras zonas de <em>rechazo</em> de hipótesis. Con estos podemos con suficiente evidencia probar una pregunta de investigación. Para establecerlos, debemos dar por sentada la <span style="color:red"> <strong>significancia</strong> </span> o nivel de la prueba, a mayor nivel la zona “critica” será aún mas exigente para testear algo -cosa que siempre debemos desear<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>-. En la medida que su confianza exija un mayor nivel esta asumiendo pruebas con una población mas grande. Los niveles van en el 90% muestras pequeñas y menor es la exigencia (zona critica muy “relajada”), mientras que en un 95% es mucho mas completa y exigente, ya para el caso superior se debe tomar el nivel de 99%. En <span style="color:lightblue"> <strong>R</strong> </span> es fácil obtenerlo a partir del comando <code>qnorm()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Buscar en las tabla de la normal en niveles de significancia</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qnorm</span>(<span class="fl">0.90</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.281552</code></pre>
+</div>
+</div>
+<p>Recuerde que esto es como tener un espacio límite de valores (<em>en la guía anterior ya se había hecho una explicación al respecto de esto</em>)</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad04_files/figure-html/salida1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Si quiere ser un poco mas estricto puede usar niveles de confianza superiores que reducirán de forma consistente el area de rechazo de la prueba de hipotesis. Mire la siguiente tabla:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Funciones</th>
+<th>Valores críticos</th>
+<th>Ponderación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>qnorm(0.95)</td>
+<td>1.64</td>
+<td>Alta</td>
+</tr>
+<tr class="even">
+<td>qnorm(0.975)</td>
+<td>1.96</td>
+<td>Muy Alta</td>
+</tr>
+<tr class="odd">
+<td>qnorm(0.99)</td>
+<td>2.33</td>
+<td>Estricta</td>
+</tr>
+</tbody>
+</table>
+<p>Si nota, la zona de rechazo se hace mas <strong>pequeña</strong> debido al nivel de confianza. Es de esperar que usted siempre este evaluando al máximo nivel posible.</p>
+<p>En lo consecuente para la tabla de distribuciones que requieran a la table <strong>T-Student</strong>, la opción a usar es <code>qt(p,n)</code> donde <span class="math inline">\(p\)</span> es el nivel de confianza y <span class="math inline">\(n\)</span> viene a ser el tamaño de la muestra o número de observaciones:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qt</span>(<span class="fl">0.95</span>, <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.697261</code></pre>
+</div>
+</div>
+<p>Esos límites calculados o hallados serán denominados como nuestros <strong>estadísticos críticos</strong>, con el objeto de <strong>rechazar nuestras hipótesis</strong> nulas, el <em>T-Calculado</em> debe ser mayor en su valor absoluto a estos valores críticos. A diferencia de <code>qnorm</code> debe añadirse <span class="math inline">\((n)\)</span> que es el tamaño de la muestra y no el de la población.</p>
+</section>
+<section id="intervalos-de-confianza" class="level2">
+<h2 class="anchored" data-anchor-id="intervalos-de-confianza">Intervalos de confianza</h2>
+<p>Entendiendo mejor los valores críticos, podemos entonces construir <strong>intervalos de confianza</strong> que permitirán inferir donde se ubica o esta el promedio de una variable.</p>
+<p><span class="math display">\[\left[ \bar{y} - \text{Valor crítico} \frac{\alpha}{2} \times s.e(\bar{y}) \leq \bar{y} \leq \bar{y} + \text{Valor crítico} \frac{\alpha}{2} \times s.e(\bar{y}) \right]\]</span></p>
+<p>La clave es <strong>el valor crítico</strong>, quien viene a ser nuestro <strong>límite</strong> de zona, debe usted estar en capacidad de mirar que las pruebas estadísticas así lo requieren. Miremos que el valor crítico es el que nos da el nivel del 95% con muestras grandes, entonces usemos el que nos da el <code>qnorm(95)</code></p>
+<p><span class="math display">\[\left[ \bar{y} - 1.65  \times s.e(\bar{y}) \leq \bar{y} \leq \bar{y} + 1.65 \times s.e(\bar{y}) \right]\]</span> El resto de valores son la media (promedio) de la variable a evaluar y su respectiva desviación estándar (s.e).</p>
+<blockquote class="blockquote">
+<p>Aplicación</p>
+</blockquote>
+<p>Tomemos por ejemplo el numero de <em>firmas</em> o <em>empresas</em> que se capacitaron laboralmente dentro un periodo de tiempo. Queremos mostrar si hay o existe alguna diferencia entre el grupo que recibe la <strong>capacitación</strong> o entrenamiento y de otro que no lo hizo<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Diremos que los <code>tratados</code> hacen referencia a los que se trataron o fueron seleccionados para el proceso de entrenamiento/capacitación y los <code>controles</code> como aquellos que no lo fueron o no tomaron esa capacitación.</p>
+<p>Primero vamos a definir un estadístico de prueba o que mida el cambio. Esto significa que vamos a mirar la <span style="color:red"> <strong>diferencia</strong> </span> de los promedios de aquellos individuos/firmas que tuvieron la capacitación <em>versus</em> aquellos que no la tuvieron. Para eso vamos a utilizar el estadístico de <span class="math inline">\(\tau_i\)</span> que significa:</p>
+<p><span class="math display">\[\tau_i= \text{Promedio de los Tratados}-\text{Promedio de los Controles}\]</span> Esto es como mirar lo que se conoce como <span style="red:lightblue"> <strong>Diferencia de medias(promedios)</strong> </span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Datos de ejemplo</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tratados<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">1</span>,<span class="dv">6</span>,.<span class="dv">45</span>,<span class="fl">1.25</span>,<span class="fl">1.3</span>,<span class="fl">1.06</span>,<span class="dv">3</span>,<span class="fl">8.18</span>,<span class="fl">1.67</span>,.<span class="dv">98</span>,<span class="dv">1</span>,.<span class="dv">45</span>,<span class="fl">5.03</span>,<span class="dv">8</span>,<span class="dv">9</span>,<span class="dv">18</span>,.<span class="dv">28</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="dv">7</span>,<span class="fl">3.97</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>controles<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">5</span>,.<span class="dv">5</span>,<span class="fl">1.54</span>,<span class="fl">1.5</span>,.<span class="dv">8</span>,<span class="dv">2</span>,.<span class="dv">67</span>,<span class="fl">1.17</span>,.<span class="dv">51</span>,.<span class="dv">5</span>,.<span class="dv">61</span>,<span class="fl">6.7</span>,<span class="dv">4</span>,<span class="dv">7</span>,<span class="dv">19</span>,.<span class="dv">2</span>,<span class="dv">5</span>,<span class="fl">3.83</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Creamos nuestro estadístico de prueba</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Cambio <span class="ot">&lt;-</span> tratados <span class="sc">-</span> controles</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ingredientes para el intervalo y su formula: usamos parentesis para resultados</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>avgCh<span class="ot">&lt;-</span> <span class="fu">mean</span>(Cambio)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>n    <span class="ot">&lt;-</span> <span class="fu">length</span>(Cambio)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>sdCh <span class="ot">&lt;-</span> <span class="fu">sd</span>(Cambio)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>se   <span class="ot">&lt;-</span> sdCh<span class="sc">/</span><span class="fu">sqrt</span>(n)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>c    <span class="ot">&lt;-</span> <span class="fu">qt</span>(.<span class="dv">975</span>, n<span class="dv">-1</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Intervalo de confianza al 97.5%:</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(avgCh <span class="sc">-</span> c<span class="sc">*</span>se, avgCh <span class="sc">+</span> c<span class="sc">*</span>se)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.03096631 2.27803369</code></pre>
+</div>
+</div>
+<p>Esto no es mas que la aplicación de la formula que se explicó anteriormente para el intervalo de confianza de <span class="math inline">\((\bar{y})\)</span> solo que estamos usando en esta ocasión la diferencia de promedios o <span class="math inline">\((\tau)\)</span>:</p>
+<p><font size="+6"><span class="math display">\[\left[0.030\leq \tau_i\leq 2.28\right]\]</span></font></p>
+<p>Que es el intervalo de nuestra prueba y mirando que nuestro estadístico o media “cae” dentro del intervalo. Podríamos estar pensando en <span style="color:red"><strong>rechazar</strong></span> posiblemente nuestra <strong>hipotesis nula</strong> o <span class="math inline">\(H_0\)</span>. Sin embargo, interpretemos todo y lo anterior hacerlo en un solo paso o forma con el comando <code>t.test</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ejemplo de dos colas: Intervalo de confianza</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(Cambio)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  Cambio
+t = 2.1507, df = 19, p-value = 0.04458
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 0.03096631 2.27803369
+sample estimates:
+mean of x 
+   1.1545 </code></pre>
+</div>
+</div>
+<p>Para el caso, encontramos que si existen diferencias entre un grupo y el otro con respecto a la capacitación por lo menos con 95% de significancia. Lo que nos indica que la <strong>capacitación</strong> si ha tenido impacto y que deberían aplicarse a futuro otras capacitaciones. El <code>t=2.15</code> es el calculado y si vemos, es mayor al <em>t-critico</em> <code>t=1.69</code> que es el valor que sale en la tabla de la t-student. La parte de <code>df</code> viene a ser la parte de los grados de libertad de los datos. Note que el <code>p-value</code> es la probabilidad de caer en la zona de no rechazo y por ende es el argumento que nos lleva a decir la razón de rechazar <span class="math inline">\(H_0\)</span>.</p>
+<section id="otras-opciones" class="level3">
+<h3 class="anchored" data-anchor-id="otras-opciones">Otras opciones</h3>
+<p>Ademas de lo anterior, también podemos hacer pruebas de una cola respectivamente. Suponga que por un momento se dice que la capacitación ha tenido efectos negativos en el rendimiento de un grupo con respecto al otro.</p>
+<p><span class="math display">\[\begin{aligned}
+H_0: &amp; \tau_i = 0 \\
+H_a: &amp; \tau_i \leq 0
+\end{aligned}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuando es solo evaluar la parte izquierda</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(Cambio, <span class="at">alternative=</span><span class="st">"less"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  Cambio
+t = 2.1507, df = 19, p-value = 0.9777
+alternative hypothesis: true mean is less than 0
+95 percent confidence interval:
+     -Inf 2.082697
+sample estimates:
+mean of x 
+   1.1545 </code></pre>
+</div>
+</div>
+<p>Teniendo como resultado no rechazar la hipotesis nula. En este caso el rendimiento no ha justificado que los trabajadores con el curso hayan salido peor de lo que iniciaron.</p>
+<p>Para mirar, sea el caso que el grupo capacitado tenga un mejor rendimiento que otro desde (0) como escala o criterio, podemos hacer lo siguiente:</p>
+<p><span class="math display">\[\begin{aligned}
+H_0: &amp; \tau_i = 0 \\
+H_a: &amp; \tau_i \geq 0
+\end{aligned}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuando solo quiere evaluar los mayores o parte derecha</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(Cambio, <span class="at">alternative=</span><span class="st">"greater"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    One Sample t-test
+
+data:  Cambio
+t = 2.1507, df = 19, p-value = 0.02229
+alternative hypothesis: true mean is greater than 0
+95 percent confidence interval:
+ 0.2263028       Inf
+sample estimates:
+mean of x 
+   1.1545 </code></pre>
+</div>
+</div>
+<p>En esta ocasión si podemos rechazar la hipótesis nula de que no existe diferencias entre grupo de capacitados y los que no lo hicieron. Desde luego el programa de capacitación mejora significativamente el rendimiento de un grupo versus el otro.</p>
+<p>La parte que usó <code>less</code> es aquello que miden <span class="math inline">\(H_1: \tau \leq \tau_{0}\)</span> y la parte correspondiente a <code>greater</code> es <span class="math inline">\(H_1: \tau \geq \tau_{0}\)</span>.</p>
+</section>
+</section>
+</section>
+<section id="modelo-de-regresión-simple" class="level1">
+<h1>Modelo de Regresión Simple</h1>
+<p>Los modelos de regresión son una <strong>herramienta</strong> muy fuerte para lograr cuantificar la magnitud y relación que tiene una variable <span class="math inline">\(X\)</span> con respecto a una variable <span class="math inline">\(Y\)</span> comúnmente conocida como la variable <em>objetivo</em> o variable <em>dependiente</em>, es también inherente encontrar relaciones de <strong>causa-efecto</strong> si se cumplen varios supuestos.</p>
+<p>Un modelo de <span style="color:red"><strong>regresión muestral</strong></span> puede ser expresado como:</p>
+<p><span class="math display">\[\widehat{y}= \widehat{\beta}_{0}+\widehat{\beta}_{1}x_{1}+ \mu_{i}\]</span></p>
+<p>Donde:</p>
+<ul>
+<li><span class="math inline">\(Y\)</span> es la variable dependiente</li>
+<li><span class="math inline">\(x\)</span> hace referencia a las variables independientes</li>
+<li><span class="math inline">\(\beta\)</span> es el parámetro de medida</li>
+<li><span class="math inline">\(\mu\)</span> es el error o residuo</li>
+</ul>
+<p>Y cuyo análogos estadísticos para obtener cada uno de los <strong>parámetros</strong> es: <span class="math display">\[\begin{aligned}
+    \widehat{\beta}_{0}=&amp; \bar{y}-\widehat{\beta}_{1}\bar{x} \\
+    \widehat{\beta}_{1}=&amp;  \frac{Cov(x, y)}{Var (x)}
+\end{aligned}\]</span></p>
+<p>Recuerde que la <span class="math inline">\(cov(x,y) = \sum_i (x_i - \overline{x})(y_i - \overline{y})\)</span> y la varianza o <span class="math inline">\(Var(x)=\sum_i (x_i - \overline{x})^2\)</span></p>
+<p>Para obtener nuestra <strong>ecuación</strong> del modelo, solo debemos hallar los <span style="color:blue"><strong>estadísticos</strong></span> del promedio de la dependiente <span class="math inline">\(\bar{y}, \text{el promedio de}\; \bar{x}, Cov(x,y) \;y\; Var(x)\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr) <span class="co">#Paquete para manejo de variables</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl) <span class="co">#Para cargar datos de excel (xls)</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>datos <span class="ot">&lt;-</span><span class="fu">read_excel</span>(<span class="st">"Salarios.xlsx"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">attach</span>(datos) <span class="co"># Frame de la base de forma resumida</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Saber el nombre de las columnas (variables) en los datos</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "wage"    "hours"   "IQ"      "KWW"     "educ"    "exper"   "tenure" 
+ [8] "age"     "married" "black"   "south"   "urban"   "sibs"    "brthord"
+[15] "meduc"   "feduc"   "Jh"     </code></pre>
+</div>
+</div>
+<p>De esta manera sabemos que variables están dentro de la base de datos. A continuación iremos resolviendo cada uno de los pasos del modelo.</p>
+<section id="ingredientes-del-modelo" class="level2">
+<h2 class="anchored" data-anchor-id="ingredientes-del-modelo">Ingredientes del modelo</h2>
+<p>Para tener nuestro modelo, entonces debemos implementar un par de <strong>métricas</strong> que nos iran dando los ingredientes que requerimos para el cálculo de la <em>mejor linea de ajuste</em>.</p>
+<section id="covarianza" class="level3">
+<h3 class="anchored" data-anchor-id="covarianza">Covarianza</h3>
+<p>Para este solo podemos hacer lo siguiente:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(exper, wage) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.873389</code></pre>
+</div>
+</div>
+<p>Esta no tiene ninguna interpretación pero por lo menos su signo, si nos va dando <strong>dirección</strong> de la relación que tiene la variable objetivo del salario con la experiencia del individuo.</p>
+</section>
+<section id="varianza" class="level3">
+<h3 class="anchored" data-anchor-id="varianza">Varianza</h3>
+<p>La varianza de la variable explicativa nos permite entonces encontrar el peso o estimador adecuado.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(exper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 19.13701</code></pre>
+</div>
+</div>
+</section>
+<section id="media-de-la-variable-dependiente-e-independiente" class="level3">
+<h3 class="anchored" data-anchor-id="media-de-la-variable-dependiente-e-independiente">Media de la variable dependiente e independiente</h3>
+<p>Los promedios de cada una de las variables que estaremos usando en nuestro modelo, nos permite entonces tener la característica de cada una en este caso.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(wage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 957.9455</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(exper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11.56364</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="cálculos-manuales-de-los-coeficientes-de-mco-ols" class="level1">
+<h1>Cálculos manuales de los coeficientes de MCO (OLS)</h1>
+<p>Recuerde que al final de todo, lo que se requiere es hallar las ‘incognitas’, que en este caso no es mas que cada uno de los estimadores del modelo. Para <span class="math inline">\(\hat{\beta}_1\)</span> entonces es</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>( b1hat <span class="ot">&lt;-</span> <span class="fu">cov</span>(exper, wage )<span class="sc">/</span><span class="fu">var</span>(exper) ) <span class="co"># usamos doble paréntesis para resultado</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2024031</code></pre>
+</div>
+</div>
+<p>Luego entonces, nos corresponde hallar el <code>parámetro autonomo</code> o <span class="math inline">\(\hat{\beta}_0\)</span>, en este caso aplicamos:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>( b0hat <span class="ot">&lt;-</span> <span class="fu">mean</span>(wage) <span class="sc">-</span> b1hat<span class="sc">*</span><span class="fu">mean</span>(exper) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 955.6049</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># "detach" quitar el atajo del data frame</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">detach</span>(datos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Que nos arroja una <strong>ecuación</strong> de modelo denotada como: <span class="math display">\[\widehat{y}= 955.60+0.202\;\text{Experiencia}+ \mu_{i}\]</span></p>
+<p>Es imprescindible que vaya en el modelo el <strong>residuo</strong> <span class="math inline">\(\mu_{i}\)</span>, esto hace “noble” la estimación y permite establecer que no solo la <em>-experiencia</em> impacta o tiene efecto en el salario de una persona <em>existen muchas otras variables que también tienen efectos en la dependiente, pero que por el momento estamos ignorando o no teniendo en cuenta</em>-. <strong>La interpretación</strong> de los datos es vital en esta parte. El modelo nos esta indicando que las personas sin experiencia se están ganando en promedio un salario de $955.60. Si queremos conocer a partir de la información que nos están brindando cuanto gana en promedio una persona que tiene 5 años de experiencia, entonces podemos variar (reemplazar) la ecuación y tener:</p>
+<p><span class="math display">\[956.61= 955.60+0.202\times 5\]</span></p>
+<p>Note que para este caso una persona que tenga 5 años de experiencia se gana alrededor de $956.61. Tenemos entonces un modelo predictivo de los salarios esperados dada la información adquirida.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Para graficar un modelo de regresión simple</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> datos, <span class="fu">aes</span>(<span class="at">y =</span> wage, <span class="at">x =</span> exper))</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>q<span class="ot">=</span>p<span class="sc">+</span><span class="fu">ylab</span>(<span class="st">"Salario (En dolares)"</span>)<span class="sc">+</span><span class="fu">xlab</span>(<span class="st">"Años de experiencia"</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>grafico<span class="ot">=</span>p<span class="sc">+</span><span class="fu">geom_point</span>(<span class="at">col =</span> <span class="st">'blue'</span>)<span class="sc">+</span><span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">'lm'</span>, <span class="at">col =</span> <span class="st">'red'</span>, <span class="at">size =</span> <span class="fl">0.5</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>grafico</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad04_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="regresión-estándar" class="level1">
+<h1>Regresión Estándar</h1>
+<p><span style="color:blue"> <strong>R</strong> </span> es un software multifuncional, puede obtener rapidamente los coeficientes de nuestro modelo de forma inmediata, sin perder la esencia de lo que se intenta calcular, esto es:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Modelo de forma resumida</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>Salario<span class="ot">&lt;-</span>datos<span class="sc">$</span>wage</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>Experiencia<span class="ot">&lt;-</span> datos<span class="sc">$</span>exper</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Objeto del modelo</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>modelo<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">lm</span>(Salario <span class="sc">~</span> Experiencia)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co">#Resultados del modelo</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo<span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = Salario ~ Experiencia)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-842.43 -289.13  -52.84  201.86 2120.17 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 955.6049    37.4111  25.543   &lt;2e-16 ***
+Experiencia   0.2024     3.0261   0.067    0.947    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 404.6 on 933 degrees of freedom
+Multiple R-squared:  4.795e-06, Adjusted R-squared:  -0.001067 
+F-statistic: 0.004474 on 1 and 933 DF,  p-value: 0.9467</code></pre>
+</div>
+</div>
+<p>Note que los resultados son <strong>similares</strong> a los obtenidos de forma <em>manual</em>. En el <span style="color:red"> <strong>summary</strong> </span> o <strong>resumen</strong> no solo obtenemos nuestros <strong>parámetros objetivos</strong> sino también sus <strong>errores estándar</strong> para las respectivas <em>pruebas de hipótesis</em> y sus <em>P-values</em> a parte de otros indicadores que iremos explorando mas adelante como el coeficiente de determinación o <strong>R-Cuadrado</strong>.</p>
+<p>De acuerdo al <em>resultado</em> anterior podemos probar en confianza que la variable <span style="color:red"> <strong>Experiencia</strong> </span> no explica en los niveles de confianza del 90%, 95% y 99% respectivamente el salario de las personas, es de esperar, que por un año adicional de experiencia que un individuo tenga su salario se incremente en tan US$0.20. Observe que el <em>intercepto</em> tiene un valor de US$955.60 que seria el promedio que se gana una persona de salario cuando no se tiene en cuenta los años de <em>experiencia</em> de esa persona.</p>
+<section id="otros-formatos-de-salida" class="level3">
+<h3 class="anchored" data-anchor-id="otros-formatos-de-salida">Otros formatos de salida</h3>
+<p>Existen múltiples formas de mostrar resultados de los modelos lineales y no lineales en econometría, uno de ellos es <a href="https://hughjonesd.github.io/huxtable/">huxtable</a> y el otro, como table de kable. Cualquiera que use, es muy bueno para darle mas formato a las salidas de los modelos. Un par de ejemplo son:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear tabla con huxreg</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>md1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Salario <span class="sc">~</span> Experiencia)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>md1result <span class="ot">&lt;-</span> <span class="fu">huxreg</span>(<span class="st">"Tabla #1"</span> <span class="ot">=</span> md1)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar tabla</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>md1result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="huxtable" data-quarto-disable-processing="true" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:flex">
+<colgroup><col><col></colgroup><tbody><tr>
+<th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Tabla #1</th></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(Intercept)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">955.605 ***</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(37.411)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Experiencia</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.202&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(3.026)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">N</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">935&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">R2</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.000&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">logLik</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-6938.363&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">AIC</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">13882.725&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th colspan="2" style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"> *** p &lt; 0.001;  ** p &lt; 0.01;  * p &lt; 0.05.</th></tr>
+</tbody></table>
+
+</div>
+</div>
+<p>Que nos brinda un formato mucho mejor que la salida tradicional que nos da <strong>R</strong> por “default”. Por otro lado, tambien se puede hacer con el paquete <code>knitr</code> o formato kable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>md1<span class="ot">&lt;-</span><span class="fu">lm</span>(Salario <span class="sc">~</span> Experiencia) <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tidy</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Modelo de regresión simple"</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Variables"</span>, <span class="st">"Estimador"</span>, <span class="st">"SE"</span>, <span class="st">"t"</span>, <span class="st">"p"</span>),</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">digits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>md1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Modelo de regresión simple</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Variables</th>
+<th style="text-align: right;">Estimador</th>
+<th style="text-align: right;">SE</th>
+<th style="text-align: right;">t</th>
+<th style="text-align: right;">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">955.6</td>
+<td style="text-align: right;">37.411</td>
+<td style="text-align: right;">25.54</td>
+<td style="text-align: right;">0.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Experiencia</td>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">3.026</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.947</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="pruebas-de-hipótesis" class="level3">
+<h3 class="anchored" data-anchor-id="pruebas-de-hipótesis">Pruebas de Hipótesis</h3>
+<p>La prueba de hipótesis para el parámetro de la <em>experiencia</em> concerniente al <span class="math inline">\(\beta_{1}\)</span>, en este caso es:</p>
+<p><span class="math display">\[\begin{aligned}
+    H_{0}: \beta_{1}=&amp;\;0\\
+    H_{a}: \beta_{1}\neq&amp;\;0
+\end{aligned}\]</span></p>
+<p>Mire que lo que se intenta <span style="color:blue"> <strong>probar</strong> </span> es que lo que estamos hallando no sea <strong>cero</strong>, por el contrario, sea el verdadero valor de la <strong>estimación</strong> y se pueda decir a ciencia cierta que el impacto (efecto) <em>promedio</em> que tiene la <em>experiencia</em> sobre el <span style="color:red"> <strong>Salario</strong> </span> sea el requerido.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qt</span>(<span class="fl">0.95</span>, <span class="dv">935</span>) <span class="co">#Obtener el estadístico critico para el parámetro</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.646485</code></pre>
+</div>
+</div>
+<p>El estadístico o <span style="color:blue"> <strong>t-calculado</strong> </span> de nuestro modelo para la variable <em>experiencia</em> es de 0.067 <span class="math inline">\(&lt;\)</span> 1.646, el cual, es menor al valor critico del nivel de significancia de 95%, por tanto, hay suficiente evidencia estadística para <strong>no rechazar</strong> la hipótesis nula de que este valor sea de cero o no significativo. Obtener el estadístico simplemente sale de la división del parámetro beta entre su error estándar. <em>Observe que <span class="math inline">\(\beta\)</span> poblacional toma siempre el valor de cero (se desconoce)</em>.</p>
+</section>
+<section id="criterio-de-rechazo" class="level3">
+<h3 class="anchored" data-anchor-id="criterio-de-rechazo">Criterio de rechazo</h3>
+<p>Las claves para <em>rechazar</em> la hipótesis nula es que siempre:</p>
+<p><span class="math display">\[\text{Valor calculado}&gt; \color{#eb173b}{\text{Valor crítico}}\]</span> El <em>valor crítico</em> es tomado de la tabla (t-student). Lo que significa en términos de probabilidad (de caer en la zona de NO RECHAZO):</p>
+<p><span class="math display">\[0.000&lt; \color{#eb173b}{0.05}\]</span></p>
+<p>La probabilidad siempre debe ser cero (0) de caer en esa zona. Se hace uso del 0.05 ya que es el nivel de error de probabilidad o (1-p) en confianza.</p>
+<p><span class="math display">\[t-calculado: \frac{\widehat{\beta_{i}}-\beta}{S.e(\widehat{\beta}_{i})}\]</span></p>
+</section>
+</section>
+<section id="de-los-supuestos-m.c.o" class="level1">
+<h1>De los supuestos M.C.O</h1>
+<p>Los modelos no solo se estiman para encontrar relaciones entre variables, sino también para probar teorías que han sido expuestas por otros autores anteriormente. Es por esto, que en la medida que se pueda, “testeamos” nuestro modelo y lo hacemos mas “fuerte” para dar evidencia empírica que respalde que se esta haciendo un buen experimento. Los primeros supuestos del modelo de <strong><em>mínimos cuadrados ordinarios</em></strong> tienen que ver con la media, varianza y distribución del residuo <span class="math inline">\(\mu_{i}\)</span> de nuestro modelo - <em>recuerde que este parámetro recoge todas las variables que afectan a <span class="math inline">\(Y\)</span> pero que no controlamos, sin embargo, queremos que su incidencia sea la mas pequeña posible</em> -.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Para obtener valores de predicción dato a dato </span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="co"># y obtener los residuos (u.hat)</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>b.hat <span class="ot">&lt;-</span> <span class="fu">coef</span>(modelo<span class="fl">.1</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>sal.hat <span class="ot">&lt;-</span> <span class="fu">fitted</span>(modelo<span class="fl">.1</span>)</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>u.hat <span class="ot">&lt;-</span> <span class="fu">resid</span>(modelo<span class="fl">.1</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Valores que se pueden añadir a la tabla y mostrar 10 valores</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(Salario, Experiencia, sal.hat, u.hat)[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Salario Experiencia  sal.hat      u.hat
+1      769          11 957.8314 -188.83137
+2      808          11 957.8314 -149.83137
+3      825          11 957.8314 -132.83137
+4      650          13 958.2362 -308.23618
+5      562          14 958.4386 -396.43858
+6     1400          14 958.4386  441.56142
+7      600          13 958.2362 -358.23618
+8     1081           8 957.2242  123.77584
+9     1154          13 958.2362  195.76382
+10    1000          16 958.8434   41.15661</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirmar propiedad (1) de MCO:</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(u.hat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5.936642e-14</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirmar propiedad (2) de MCO:</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(datos<span class="sc">$</span>exper, u.hat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.262167e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Confirmar propiedad (3) de MCO :</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(datos<span class="sc">$</span>wage)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 957.9455</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>b.hat[<span class="dv">1</span>] <span class="sc">+</span> b.hat[<span class="dv">2</span>] <span class="sc">*</span> <span class="fu">mean</span>(datos<span class="sc">$</span>exper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept) 
+   957.9455 </code></pre>
+</div>
+</div>
+<section id="test-de-normalidad" class="level2">
+<h2 class="anchored" data-anchor-id="test-de-normalidad">Test de Normalidad</h2>
+<p>La prueba de hipótesis de la <strong>distribución normal</strong> de los residuos puede escribirse plantearse así:</p>
+<p><span class="math display">\[\begin{aligned}
+    H_{0}:&amp;\; \text{Se distribuye,}\; \mu \sim N \left (0, \sigma^2  \right )\\
+    H_{a}:&amp; \; \text{No se distribuye,}\; \mu \sim N \left (0, \sigma^2  \right )
+\end{aligned}\]</span></p>
+<p>Miremos una gráfica de los residuos del modelo anterior:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Normalidad de los residuos (importante)</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(u.hat, <span class="at">main =</span> <span class="st">"Histograma de los residuos"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad04_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Al parecer los residuos de nuestro modelo no presentan un comportamiento adecuado o similar a la campana de Gauss, mas bien tiene algo de sesgo positivo y podriamos pensar que no sigue una distribución <span style="red"> <strong>normal</strong> </span> .</p>
+<p>La formula para obtener el estadístico de <strong>Jarque- Bera</strong> es:</p>
+<p><span class="math display">\[JB=\left [ \frac{s^2}{6} \times \frac{(k-3)^2}{24} \right ]\sim \chi^2\]</span> Donde <span class="math inline">\(s\)</span> es la asimetría, <span class="math inline">\(k\)</span> es la curtosis y se distribuye chi-cuadrado. De la prueba podemos hacerla con el paquete <code>moments</code> y de ahi mirar si los residuos sigan una distribución normal.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(moments) <span class="co"># Paquete estadistico</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">jarque.test</span>(u.hat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Jarque-Bera Normality Test
+
+data:  u.hat
+JB = 507.99, p-value &lt; 2.2e-16
+alternative hypothesis: greater</code></pre>
+</div>
+</div>
+<p>El resultado anterior nos muestra lo que sospechábamos. El estadistico permite rechazar la hipótesis de <strong>normalidad</strong> ya que este <span class="math inline">\(507.99&gt; \; \text{Chí-critico}\)</span> y el p valor es casi cero, por ende no es normal.</p>
+<p>De las propiedades mas importantes, destacamos que nuestro modelo las satisface en su gran mayoría. La normalidad de los <strong>residuos</strong> es importante tenerla, ya que nos permite decir si los <span class="math inline">\(\beta `s\)</span> son consistentes y eficientes, sin embargo, podemos asumir la insesgadez y linealidad de estos parámetros encontrados.</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Imaginese que usted siempre quiere competir y comparse con los mejores. Uno siempre desea para mirar con quien ser mas competivo(a) y por ende el nivel debe ser aun mas alto o mas estricto.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Personas, instituciones o firmas que tomamos como controles de la prueba y que no fueron seleccionada(o)s para aprender/capacitarse/entrenarse. Recuerde que aprender cierta técnica sugiere que un grupo sea mas productivo o mejor que aquellos que no hayan realizado el curso/capacitación/entrenamiento.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lecciones/unidad03.html" class="pagination-link" aria-label="3: Distribución de datos">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">3: Distribución de datos</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
