@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Guía de Econometría para R (Uninorte) - 5: Mínimos Cuadrados Ordinarios</title>
+<title>Guía de Econometría para R (Uninorte) - 5: Formas Funcionales de MCO</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -134,10 +134,10 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="Guía de Econometría para R (Uninorte) - 5: Mínimos Cuadrados Ordinarios">
+<meta property="og:title" content="Guía de Econometría para R (Uninorte) - 5: Formas Funcionales de MCO">
 <meta property="og:description" content="Métodos cuantitativos en Econometría">
 <meta property="og:site_name" content="Guía de Econometría para R (Uninorte)">
-<meta name="twitter:title" content="Guía de Econometría para R (Uninorte) - 5: Mínimos Cuadrados Ordinarios">
+<meta name="twitter:title" content="Guía de Econometría para R (Uninorte) - 5: Formas Funcionales de MCO">
 <meta name="twitter:description" content="Métodos cuantitativos en Econometría">
 <meta name="twitter:card" content="summary">
 </head>
@@ -190,7 +190,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad05.html">5: Mínimos Cuadrados Ordinarios</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad05.html">5: Formas Funcionales de MCO</a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -244,13 +244,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../lecciones/unidad05.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">5: Mínimos Cuadrados Ordinarios</span></a>
+ <span class="menu-text">5: Formas Funcionales de MCO</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../lecciones/unidad06.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">unidad06.html</span></a>
+ <span class="menu-text">6: Matrices y regresión múltiple</span></a>
   </div>
 </li>
       </ul>
@@ -280,9 +280,9 @@ window.Quarto = {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad05.html">5: Mínimos Cuadrados Ordinarios</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad01.html">Parte 1</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad05.html">5: Formas Funcionales de MCO</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">5: Mínimos Cuadrados Ordinarios</h1>
+<h1 class="title">5: Formas Funcionales de MCO</h1>
 </div>
 
 
@@ -304,8 +304,11 @@ window.Quarto = {
 </div>
 <div class="quarto-layout-panel" data-layout="[30,70]">
 <div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: flex-start;">
-<p><img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnpzN3pveHFlcmVuZzBod2RuenFjbGZ1ZDc5eHViYnMzeG5zdmh4ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HEOQ8abOwAxbHmpmTR/giphy.gif" class="img-fluid"> Las <strong>formas funcionales</strong> de la regresión son representaciones matemáticas que describen la relación entre las variables dependientes e independientes en un modelo econométrico. Entre las más comunes se encuentran la forma lineal, log-lineal, log-log y la cuadrática.</p>
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnpzN3pveHFlcmVuZzBod2RuenFjbGZ1ZDc5eHViYnMzeG5zdmh4ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HEOQ8abOwAxbHmpmTR/giphy.gif" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p>Las <strong>formas funcionales</strong> de la regresión son representaciones matemáticas que describen la relación entre las variables dependientes e independientes en un modelo econométrico. Entre las más comunes se encuentran la forma lineal, log-lineal, log-log y la cuadrática.</p>
 </div>
 </div>
 </div>
@@ -1186,8 +1189,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../lecciones/unidad06.html" class="pagination-link" aria-label="unidad06.html">
-        <span class="nav-page-text">unidad06.html</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../lecciones/unidad06.html" class="pagination-link" aria-label="6: Matrices y regresión múltiple">
+        <span class="nav-page-text">6: Matrices y regresión múltiple</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

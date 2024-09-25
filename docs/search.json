@@ -340,23 +340,23 @@
   {
     "objectID": "lecciones/unidad05.html#de-la-elasticidad",
     "href": "lecciones/unidad05.html#de-la-elasticidad",
-    "title": "5: Mínimos Cuadrados Ordinarios",
+    "title": "5: Formas Funcionales de MCO",
     "section": "De la elasticidad",
     "text": "De la elasticidad\nDentro del análisis econométrico, sobre sale también el económico, podemos usar una medida de sensibilidad de las variables, este es simple y se denomina  elasticidad . Considere siempre que la identificación es:\n\\[Elasticidad=\\left\\{\\begin{matrix}\n|\\epsilon| &gt; & 1 \\quad \\text{Elástica} \\\\\n|\\epsilon| &lt; & 1 \\quad \\text{Inelástica} \\\\\n|\\epsilon| = & 1 \\quad \\text{Unitaria} \\\\\n\\end{matrix}\\right.\\]\nHay que tener presente la ecuación de la elasticidad es:\n\\[\\epsilon= \\frac{\\delta Y/Y}{\\delta X/X} = \\frac{\\delta Y}{\\delta X} \\times \\frac{X}{Y}\\]\nEn el caso del modelo de regresión, estimar el \\(\\beta_{i}\\) resulta ser la medida del cambio de \\(Y\\) brindado por \\(X\\). Lo que resulta ser: \\[\\epsilon= \\widehat{\\beta}_{i} \\times \\frac{X}{Y}\\]\nPara una simplificación mayor tomaremos los valores promedios de cada una de las variables explicativas y dependiente y con esto se obtendrá la elasticidad promedio.\n\n#Para elasticidad\nattach(datos)\n(b1hat &lt;- cov(exper,wage)/var(exper)) #Hallar beta de reg\n\n[1] 0.2024031\n\nelasticidad&lt;-b1hat*(exper/sal.hat)\n\n## Distintas formas ##\nmelasticidad&lt;-b1hat*(mean(exper)/mean(wage))  #Forma 1\nmelasticidad2&lt;-b1hat*(mean(exper)/mean(sal.hat)) #Forma 2\n\n## Tabla de salida\ncbind(wage, exper, elasticidad, melasticidad, melasticidad2 )[1:10,]\n\n   wage exper elasticidad melasticidad melasticidad2\n1   769    11 0.002324453  0.002443266   0.002443266\n2   808    11 0.002324453  0.002443266   0.002443266\n3   825    11 0.002324453  0.002443266   0.002443266\n4   650    13 0.002745920  0.002443266   0.002443266\n5   562    14 0.002956520  0.002443266   0.002443266\n6  1400    14 0.002956520  0.002443266   0.002443266\n7   600    13 0.002745920  0.002443266   0.002443266\n8  1081     8 0.001691584  0.002443266   0.002443266\n9  1154    13 0.002745920  0.002443266   0.002443266\n10 1000    16 0.003377454  0.002443266   0.002443266\n\ndetach(datos)\n\nPara este caso la elasticidad punto o individual de cada una de las observaciones es un tinte inelástica, lo que apoya a decir que un cambio en un uno (1) por-ciento % genera un cambio en el salario de 0.2 por-ciento.",
     "crumbs": [
       "Parte 1",
-      "5: Mínimos Cuadrados Ordinarios"
+      "5: Formas Funcionales de MCO"
     ]
   },
   {
     "objectID": "lecciones/unidad05.html#regresión-sin-constante-con-constante-y-con-constante-e-intercepto",
     "href": "lecciones/unidad05.html#regresión-sin-constante-con-constante-y-con-constante-e-intercepto",
-    "title": "5: Mínimos Cuadrados Ordinarios",
+    "title": "5: Formas Funcionales de MCO",
     "section": "Regresión sin constante, con constante y con constante e intercepto",
     "text": "Regresión sin constante, con constante y con constante e intercepto\nAlgunas veces, se hace necesario -solo si la teoría así lo indica- de estimar una regresión a través del origen o sin constante o intercepto. Las opciones para este tipo de estimaciones son:\n\n#Regresion sin constante, con constante y solo constante\n# La regresión normal\n(reg1 &lt;- lm(wage ~ exper, data=datos))\n\n\nCall:\nlm(formula = wage ~ exper, data = datos)\n\nCoefficients:\n(Intercept)        exper  \n   955.6049       0.2024  \n\n# Regresión sin intercepto (a través del origen):\n(reg2 &lt;- lm(wage ~ 0 + exper, data=datos))\n\n\nCall:\nlm(formula = wage ~ 0 + exper, data = datos)\n\nCoefficients:\nexper  \n 72.5  \n\n# Regresión sin pendiente con solo la constante:\n(reg3 &lt;- lm(wage ~ 1 , data=datos))\n\n\nCall:\nlm(formula = wage ~ 1, data = datos)\n\nCoefficients:\n(Intercept)  \n      957.9  \n\n# Es el mismo promedio\nmean(datos$wage)\n\n[1] 957.9455\n\n\nUn resumen de los resultados de cada modelo ahora estimado:\n\nreg1 &lt;- lm(wage ~ exper, data=datos)\nreg2 &lt;- lm(wage ~ 0 + exper, data=datos)\nreg3 &lt;- lm(wage ~ 1 , data=datos)\n\n# Todo el grupo de regresiones\nregfh &lt;- list(\"Modelo Lineal\" = reg1, \"Modelo sin constante\" = reg2, \n             \"Modelo sin explicativa\" = reg3)\n\nhuxreg(regfh, statistics = c(N = \"nobs\", R2 = \"r.squared\"),\n       note = \"Nota: Son transformaciones simples\")\n\n\n\nModelo LinealModelo sin constanteModelo sin explicativa\n\n(Intercept)955.605 ***        957.945 ***\n\n(37.411)           (13.224)   \n\nexper0.202    72.505 ***        \n\n(3.026)   (1.394)           \n\nN935        935        935        \n\nR20.000    0.743    0.000    \n\nNota: Son transformaciones simples\n\n\n\n\nA continuación el grupo de lineas que implican esto:\n\n# Gráfico de las 3 regresiones\nplot(datos$exper, datos$wage, xlab = \"Experiencia en años\", ylab = \"Salario en millones\")\nabline(reg1, lwd=2, lty=1)\nabline(reg2, lwd=2, lty=2)\nabline(reg3, lwd=2, lty=3)\nlegend(\"topleft\",c(\"Completo\",\"A traves del origen\",\"Solo la constante\"),lwd=2,lty=1:3)",
     "crumbs": [
       "Parte 1",
-      "5: Mínimos Cuadrados Ordinarios"
+      "5: Formas Funcionales de MCO"
     ]
   },
   {

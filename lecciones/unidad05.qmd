@@ -1,10 +1,11 @@
 ---
-title: "5: Mínimos Cuadrados Ordinarios"
+title: "5: Formas Funcionales de MCO"
 ---
 
 ::: {layout="[30,70]"}
 
 ![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNnpzN3pveHFlcmVuZzBod2RuenFjbGZ1ZDc5eHViYnMzeG5zdmh4ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HEOQ8abOwAxbHmpmTR/giphy.gif)
+
 Las **formas funcionales** de la regresión son representaciones matemáticas que describen la relación entre las variables dependientes e independientes en un modelo econométrico. Entre las más comunes se encuentran la forma lineal, log-lineal, log-log y la cuadrática.
 
 :::
