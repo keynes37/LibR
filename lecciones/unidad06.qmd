@@ -1,0 +1,295 @@
+---
+title: "6: Matrices y regresión múltiple"
+---
+
+::: {layout="[30,70]"}
+
+![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDRtODNodWFqMjF6YWFlcWV6bXIxcjdsbGUweGZ3Y3pmaWEyazJkMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/G4Fbv0dS9RvJS/giphy.gif)
+
+La **regresión múltiple**, por su parte, extiende el análisis de regresión simple al considerar múltiples variables independientes que pueden influir sobre la variable dependiente, ofreciendo una visión más completa de las relaciones subyacentes en los datos. Este modelo permite controlar por múltiples factores simultáneamente, lo que mejora la precisión de las estimaciones y facilita la inferencia sobre la estructura económica que se está estudiando.
+
+:::
+
+```{r setup, include=FALSE}
+library(huxtable)
+library(extrafont)
+library(kableExtra)
+library(tidyverse)
+library(pacman)
+p_load(broom, latex2exp, ggplot2, ggthemes, ggforce, viridis, dplyr, magrittr, knitr, parallel)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Resumen
+
+En esta parte se induce al uso y manejo de <span style="color:blue">**matrices**</span>. Las cuales son muy _necesarias_ para la estimación de modelos de <span style="color:red">**regresión múltiple**</span> cuando se incorporan mas variables explicativas y/o de control.
+
+# Matrices
+
+Las matrices han sido un instrumento **matemático** utilizado para hacer grandes cálculos cuando se tienen estructuras de **datos grandes**. Tenemos entonces que empezar a hablar de _vectores_ y estos de acuerdo al orden en el que se encuentran pueden ser denominados como <span style="color:red">**vector fila**</span> y vector <span style="color:blue">**columna**</span> . Lo importante siempre es tener presente el orden de los **elementos matriciales** codificados como $a_{ij}$, donde a es el valor que toma ese elemento y la posición $i$ hace referencia al número de la fila y la parte de $j$ al número de la columna respectivamente. En **R** los elementos son ordenados con `brackets`, por ejemplo $[1,1]$, que hará referencia al valor que se posiciona en la primera fila y en la primera columna.
+
+```{r vector}
+vector1<-c(1:10) # Una columna
+vector1
+```
+
+
+De acuerdo a lo anterior, establecer matrices en **R** se puede hacer así:
+
+```{r matriz}
+# Creamos una matriz de nombre (A) para un vector de valores fila:
+datos <- c(3.2,3.3,2.5,3.1,2.4,3.3)
+(A <- matrix(datos,nrow=2))
+```
+
+Las matrices son o toman cierto objeto. Para mirar eso, es aplicable la función `class(A)`
+
+```{r}
+#Mirar la clase de objeto
+class(A)
+```
+El resultado le marcará lo que contiene ese objeto. Por otro lado siempre es bueno conocer el número de filas y columnas que tiene su matriz. La forma mas fácil de hacerlo es:
+
+```{r}
+# Si se quiere conocer sus dimensiones
+dim(A)
+```
+
+## Otra forma de hacerlo pero con rbind:
+
+Si quizas quiere o desea otro formato para escribir las matrices en <span style="color:lightblue"> **R** </span>, viene siendo usando la opción de `rbind`. Este suma cada vector en forma de `filas`.
+
+```{r}
+fila1 <- c(3.2,2.5,2.4); fila2 <- c(3.3,3.1,3.3)
+( A <- rbind(fila1, fila2) ) 
+```
+
+
+## Se puede hacer tambien por columnas (cbind)
+
+Desde luego las opciones son varias para escribir matrices. Otra manera de hacerlo es con lo siguiente:
+
+```{r}
+col1 <- c(3.2,3.3); col2 <- c(2.5,3.1); col3 <- c(2.4,3.3)
+( A <- cbind(col1, col2, col3) )
+```
+
+Pensemos que le queremos dar estructura a una matriz. Digamos que tenemos dos estudiantes de **Economía** y han matriculado un grupo de materias como las siguientes y desde luego han obtenido las siguientes notas.
+
+```{r}
+# Se le puede dar nombres para mejorar formato
+colnames(A) <- c("Micro I","Macro II"," Econometría I")
+rownames(A) <- c("Ozuna","Karol G") 
+A
+```
+
+Y de esta forma tendrá algo mas estructurado. Recuerde ademas que las matrices tienen distintas formas y con ellas podemos hacer o tener distintos cálculos.
+
+```{r}
+# Matriz Diagonal y matrices de identidad: 
+diag( c(15,-2,21) )
+diag(3)
+# Forma de los elementos dentro de las matrices: Primer elemento es fila
+#Segundo elemento es columna
+A[2,1] # Sale el elemento de la Fila 2 y columna 1
+A[,2]
+A[,c(1,3)] #Correspondiente  Micro I y Econometria I
+```
+
+Con las matrices también se pueden hacer distintas **operaciones** básicas de calculo como _adición, sustracción o restas, divisiones, multiplicaciones_, siempre es bueno tener en mente las **propiedades** y leyes de orden para poder realizar este tipo de operación. Las sumas y restas deben operarse desde el mismo tamaño matricial. Lo que es, si la matriz A es de tamaño $n\times k$ entonces la matriz B también debe tener el mismo tamaño. Ejemplo:
+
+$$A= \begin{pmatrix}
+1 &2 \\ 
+ 3&4 
+\end{pmatrix}
+B=
+\begin{pmatrix}
+5 &6 \\ 
+ 7&8 
+\end{pmatrix}$$
+
+Esto es, si se tiene $A+B$, el resultado es:
+
+$$A+B=\begin{pmatrix}
+6 &8 \\ 
+ 10&12 
+\end{pmatrix}$$
+
+Incluso esto aplica a operaciones de **multiplicación** cuando se trata de elemento a elemento. 
+
+$$
+C= \begin{pmatrix}
+8 &-4  &6 \\ 
+2 & 7 & 0
+\end{pmatrix}_{2*3} \quad y \quad 
+D= \begin{pmatrix}
+4 &2  &-1 \\ 
+3 & 2 & -3
+\end{pmatrix}_{2*3}
+$$
+
+Si logra mirar el tamaño matricial es de $2\times 3$ tanto para C como para D, lo que no cumple con lo _conformable_ cuando se realiza el proceso de la multiplicación matricial, _lo que ocurre para esta parte es que se hará elemento a elemento_ p.e: $8\times 4; -4\times 2,...$ y así sucesivamente. Es pertinente, siempre consolidar el cumplimiento de la característica de ser _conformable_, ya que garantiza que se pueda realizar la operación **completa** y de esta forma obtener los resultados deseados como por ejemplo en el caso de la regresión.
+
+```{r mult}
+### Podemos también tener y realizar operaciones con matrices
+C <- matrix( c(8,-2,-4,7,6,0), nrow=2)
+D <- matrix( c(4,3,2,2,-1,-3), nrow=2)
+C # Nos muestra la matriz realizada de C
+D # Para observar los elementos de D
+# Multiplicación elemento a elemento (no conformable)
+C*D
+
+# Transpuesta de una matriz:
+(G <- t(D) )
+
+# Forma correcta para MCO (conformable) de multiplicación:
+(H <- C %*% G )
+
+# Para la Inversa o (-1) de matriz hay que usar solve
+solve(H)
+```
+
+# Regresión múltiple con matrices
+
+Es ampliamente conocido que cuando se involucra un modelo de $K>2$ variables ya no tendríamos un modelo <span style="color:blue">**simple**</span> sino un modelo **multivariado** o <span style="color:red"> **múltiple**</span> de tal manera que:
+
+$$\widehat{y}_{i}=\beta_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}+\cdots+\beta_{k}X_{k}+\mu_{i}$$
+Donde cada $\beta$ son los **parámetros** de medida de incidencia de cada una de las variables _explicativas_ del modelo.
+
+$$\beta= (X'X)^{-1}X'Y$$
+Donde Y es la matriz de valores de la variable objetivo o **dependiente**, X es una matriz de tamaño $n\times k$ y que contiene los datos de las variables _explicativas_. La parte de $(-1)$ hace referencia a la inversa del producto matricial de valores de la matriz X. Esta _especificación_ matricial resume todos los cálculos posibles para hallar cada uno de los ``ingredientes`` que determinan y permiten construir un modelo de **Regresión Múltiple**.
+
+Note que:
+
+$$(X'X)=\begin{pmatrix}
+ n& \sum X_{1}  &\sum X_{2} \\ 
+ \sum X_{1}&\sum X_{1}^{2}  & \sum X_{1}X_{2}\\ 
+ \sum X_{2}& \sum X_{2}X_{2} & \sum X_{2}^{2}  
+\end{pmatrix}$$
+
+Cada uno de los elementos del producto de la matriz de X por su transpuesta nos brindan los <span style="color:blue">**estadísticos**</span>  necesarios. Para la estimación **matricial** en el software haremos lo siguiente:
+
+```{r modelmult}
+### Regresión múltiple con matriz ###
+#Usamos la base de salarios completa
+library(readxl) #Para cargar datos de excel (xls)
+datos <-read_excel("Salarios.xlsx")
+# Podemos Determinar tamaño y el no. de regresores:
+n <- nrow(datos); k<-2
+#Nombres de las columnas de la base
+names(datos)
+# Buscamos la variable dependiente Y
+y <- datos$wage
+# Buscamos X y adherimos una columna de unos
+X <- cbind(1, datos$hours, datos$educ)
+# Inspeccionamos entonces nuestra matriz X
+head(X)
+# Parámetros estimados:
+( bhat <- solve( t(X)%*%X ) %*% t(X)%*%y )
+```
+
+El orden de los **parámetros** betas $(\beta's)$ obtenidos,  se da en la forma en como se establece el orden de las variables en la matriz X. Tenga en cuenta que a partir de eso logrará estimar la matriz de los parámetros de su modelo, en este caso irá la constante o $\beta_0$ primero, luego el parámetro $\beta_1$ que hace referencia al número de horas que trabaja un individuo y por último el $\beta_2$ que hace referencia al nivel educativo.
+
+$$\widehat{y}= \begin{pmatrix}
+1 &40  &12 \\ 
+1 &50  &18 \\ 
+1 &\cdots  &\cdots
+\end{pmatrix}
+\times
+\begin{pmatrix}
+\beta_{0}\\ 
+\beta_{1}\\
+\beta_{2} 
+\end{pmatrix}
++
+\begin{pmatrix}
+\mu_{1}\\ 
+\mu_{2}\\
+\mu_{n} 
+\end{pmatrix}$$
+
+La ecuación del _modelo_ y los parámetros son:
+
+$$\hat{salario}=235.39-2.2166\;\text{horas}+60.87\;\text{educación} + \mu_i$$
+Si quiere tomar y hacer una predicción con el modelo. Podría intentar lo siguiente: Una persona que trabaja 4 horas y tiene 14 años de educación (algo así como segundo año de carrera), su salario podría estar rondando la cifra de 1078 dolares
+
+$$\hat{salario}=235.39-2.2166\;(4)+60.87\;(14) \equiv 1078$$
+
+# Varianza de los estimadores
+
+Los estimadores deben poseer la característica estadística de ser comparados con la significancia de las pruebas T-student, para esto debe calcularse la **varianza** del residuo:
+
+$$\widehat{\sigma}^{2}= \frac{u'u}{n-k-1}$$
+
+Recuerde que $n-k-1$, son los grados de libertad del residuo que incorpora a (n) como el total de observaciones, $(k)$ el numero de variables explicativas y (1) que hace referencia al parámetro autónomo. Después de tener la **varianza** de los residuos, se halla la matriz **varianza-covarianza** de los estimadores:
+
+$$Var(\widehat{\beta})= \sigma^{2}(X'X)^{-1}$$
+
+```{r standar}
+# Residuos del modelo: estimar varianza de  u y Error estandar:
+uhat <- y - X %*% bhat
+sigsqhat <- as.numeric( t(uhat) %*% uhat / (n-k-1) )
+(SER <- sqrt(sigsqhat) )
+
+# Se hayan las varianzas de los estimadores
+Vbetahat <- sigsqhat * solve( t(X)%*%X )
+( se <- sqrt( diag(Vbetahat) ) )
+```
+
+Cuyos valores en efecto al orden serán los siguientes:
+
+| Parámetro   | Valor  | Error estándar | Estrellas |
+|-------------|--------|----------------|-----------|
+| $\beta_{0}$ | 235.39 | 104.14         | *         |
+| $\beta_{1}$ | -2.22  | 1.738          |           |
+| $\beta_{2}$ | 60.88  | 5.717          | ***       |
+
+
+Cuando $\beta_{1}=\beta_{2}=0$, entonces la media del salario ronda los 232 dolares en promedio. Por un aumento de $X_{1}$ el salario se reduce en $-2.22$ dolares _ceteribus paribus_ y cuando la educación $x_{2}$ aumenta en un año el salario se incrementa en US\$60.88 manteniendo constante a $x_{1}$. La única variable que ha sido significativa al 99% de confianza es Educación o $x_{2}$ para esta parte.
+
+Una manera de tener lo anterior con un simple comando, es lo siguiente:
+
+```{r completo}
+#Directamente desde el ordenador (PC)
+model1<-lm(wage ~ hours + educ, data=datos)
+summary(model1)
+```
+
+Una mejor forma de ver los resultados utilizando el paquete de `flextable` es la siguiente:
+
+```{r, huxreg1}
+# Crear tabla con huxreg
+model1<-lm(wage ~ hours + educ, data=datos)
+mresult <- huxreg("Tabla #1" = model1)
+# Mostrar tabla
+mresult
+```
+
+## Indicadores ANOVA
+
+Recuerde que nuestros modelos todo el tiempo deben ser **testeados**. Un mecanismo para eso, es calcular sus respectivas métricas de varianza y analizar el error. Para eso vamos hacer un calculo manual:
+
+```{r}
+# Tomamos los ingredientes
+n <- nrow(datos)            
+k <- 2                        
+
+y_media <- mean(datos$wage) # Promedio dependiente
+
+# Métricas duras
+SSR <- sum(residuals(model1)^2)          # residuos
+TSS <- sum((datos$wage - y_media)^2)     # Suma total modelo
+ESS <- sum((fitted(model1) - y_media)^2) # Suma explicada
+
+# Calculamos
+SER <- sqrt(1/(n-k-1) * SSR)             # Error Estandar
+Rsq <- 1 - (SSR / TSS)                   # R(cuadrado)
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS   # R(Ajustado)
+
+# Resultados
+c("SER" = SER, "R2" = Rsq, "R2-Ajustado" = adj_Rsq)
+```
+
+
+
+

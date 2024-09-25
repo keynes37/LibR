@@ -336,5 +336,60 @@
       "Parte 1",
       "4: Mínimos Cuadrados Ordinarios"
     ]
+  },
+  {
+    "objectID": "lecciones/unidad05.html#de-la-elasticidad",
+    "href": "lecciones/unidad05.html#de-la-elasticidad",
+    "title": "5: Mínimos Cuadrados Ordinarios",
+    "section": "De la elasticidad",
+    "text": "De la elasticidad\nDentro del análisis econométrico, sobre sale también el económico, podemos usar una medida de sensibilidad de las variables, este es simple y se denomina  elasticidad . Considere siempre que la identificación es:\n\\[Elasticidad=\\left\\{\\begin{matrix}\n|\\epsilon| &gt; & 1 \\quad \\text{Elástica} \\\\\n|\\epsilon| &lt; & 1 \\quad \\text{Inelástica} \\\\\n|\\epsilon| = & 1 \\quad \\text{Unitaria} \\\\\n\\end{matrix}\\right.\\]\nHay que tener presente la ecuación de la elasticidad es:\n\\[\\epsilon= \\frac{\\delta Y/Y}{\\delta X/X} = \\frac{\\delta Y}{\\delta X} \\times \\frac{X}{Y}\\]\nEn el caso del modelo de regresión, estimar el \\(\\beta_{i}\\) resulta ser la medida del cambio de \\(Y\\) brindado por \\(X\\). Lo que resulta ser: \\[\\epsilon= \\widehat{\\beta}_{i} \\times \\frac{X}{Y}\\]\nPara una simplificación mayor tomaremos los valores promedios de cada una de las variables explicativas y dependiente y con esto se obtendrá la elasticidad promedio.\n\n#Para elasticidad\nattach(datos)\n(b1hat &lt;- cov(exper,wage)/var(exper)) #Hallar beta de reg\n\n[1] 0.2024031\n\nelasticidad&lt;-b1hat*(exper/sal.hat)\n\n## Distintas formas ##\nmelasticidad&lt;-b1hat*(mean(exper)/mean(wage))  #Forma 1\nmelasticidad2&lt;-b1hat*(mean(exper)/mean(sal.hat)) #Forma 2\n\n## Tabla de salida\ncbind(wage, exper, elasticidad, melasticidad, melasticidad2 )[1:10,]\n\n   wage exper elasticidad melasticidad melasticidad2\n1   769    11 0.002324453  0.002443266   0.002443266\n2   808    11 0.002324453  0.002443266   0.002443266\n3   825    11 0.002324453  0.002443266   0.002443266\n4   650    13 0.002745920  0.002443266   0.002443266\n5   562    14 0.002956520  0.002443266   0.002443266\n6  1400    14 0.002956520  0.002443266   0.002443266\n7   600    13 0.002745920  0.002443266   0.002443266\n8  1081     8 0.001691584  0.002443266   0.002443266\n9  1154    13 0.002745920  0.002443266   0.002443266\n10 1000    16 0.003377454  0.002443266   0.002443266\n\ndetach(datos)\n\nPara este caso la elasticidad punto o individual de cada una de las observaciones es un tinte inelástica, lo que apoya a decir que un cambio en un uno (1) por-ciento % genera un cambio en el salario de 0.2 por-ciento.",
+    "crumbs": [
+      "Parte 1",
+      "5: Mínimos Cuadrados Ordinarios"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad05.html#regresión-sin-constante-con-constante-y-con-constante-e-intercepto",
+    "href": "lecciones/unidad05.html#regresión-sin-constante-con-constante-y-con-constante-e-intercepto",
+    "title": "5: Mínimos Cuadrados Ordinarios",
+    "section": "Regresión sin constante, con constante y con constante e intercepto",
+    "text": "Regresión sin constante, con constante y con constante e intercepto\nAlgunas veces, se hace necesario -solo si la teoría así lo indica- de estimar una regresión a través del origen o sin constante o intercepto. Las opciones para este tipo de estimaciones son:\n\n#Regresion sin constante, con constante y solo constante\n# La regresión normal\n(reg1 &lt;- lm(wage ~ exper, data=datos))\n\n\nCall:\nlm(formula = wage ~ exper, data = datos)\n\nCoefficients:\n(Intercept)        exper  \n   955.6049       0.2024  \n\n# Regresión sin intercepto (a través del origen):\n(reg2 &lt;- lm(wage ~ 0 + exper, data=datos))\n\n\nCall:\nlm(formula = wage ~ 0 + exper, data = datos)\n\nCoefficients:\nexper  \n 72.5  \n\n# Regresión sin pendiente con solo la constante:\n(reg3 &lt;- lm(wage ~ 1 , data=datos))\n\n\nCall:\nlm(formula = wage ~ 1, data = datos)\n\nCoefficients:\n(Intercept)  \n      957.9  \n\n# Es el mismo promedio\nmean(datos$wage)\n\n[1] 957.9455\n\n\nUn resumen de los resultados de cada modelo ahora estimado:\n\nreg1 &lt;- lm(wage ~ exper, data=datos)\nreg2 &lt;- lm(wage ~ 0 + exper, data=datos)\nreg3 &lt;- lm(wage ~ 1 , data=datos)\n\n# Todo el grupo de regresiones\nregfh &lt;- list(\"Modelo Lineal\" = reg1, \"Modelo sin constante\" = reg2, \n             \"Modelo sin explicativa\" = reg3)\n\nhuxreg(regfh, statistics = c(N = \"nobs\", R2 = \"r.squared\"),\n       note = \"Nota: Son transformaciones simples\")\n\n\n\nModelo LinealModelo sin constanteModelo sin explicativa\n\n(Intercept)955.605 ***        957.945 ***\n\n(37.411)           (13.224)   \n\nexper0.202    72.505 ***        \n\n(3.026)   (1.394)           \n\nN935        935        935        \n\nR20.000    0.743    0.000    \n\nNota: Son transformaciones simples\n\n\n\n\nA continuación el grupo de lineas que implican esto:\n\n# Gráfico de las 3 regresiones\nplot(datos$exper, datos$wage, xlab = \"Experiencia en años\", ylab = \"Salario en millones\")\nabline(reg1, lwd=2, lty=1)\nabline(reg2, lwd=2, lty=2)\nabline(reg3, lwd=2, lty=3)\nlegend(\"topleft\",c(\"Completo\",\"A traves del origen\",\"Solo la constante\"),lwd=2,lty=1:3)",
+    "crumbs": [
+      "Parte 1",
+      "5: Mínimos Cuadrados Ordinarios"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad06.html#otra-forma-de-hacerlo-pero-con-rbind",
+    "href": "lecciones/unidad06.html#otra-forma-de-hacerlo-pero-con-rbind",
+    "title": "6: Matrices y regresión múltiple",
+    "section": "Otra forma de hacerlo pero con rbind:",
+    "text": "Otra forma de hacerlo pero con rbind:\nSi quizas quiere o desea otro formato para escribir las matrices en  R , viene siendo usando la opción de rbind. Este suma cada vector en forma de filas.\n\nfila1 &lt;- c(3.2,2.5,2.4); fila2 &lt;- c(3.3,3.1,3.3)\n( A &lt;- rbind(fila1, fila2) ) \n\n      [,1] [,2] [,3]\nfila1  3.2  2.5  2.4\nfila2  3.3  3.1  3.3",
+    "crumbs": [
+      "Parte 1",
+      "6: Matrices y regresión múltiple"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad06.html#se-puede-hacer-tambien-por-columnas-cbind",
+    "href": "lecciones/unidad06.html#se-puede-hacer-tambien-por-columnas-cbind",
+    "title": "6: Matrices y regresión múltiple",
+    "section": "Se puede hacer tambien por columnas (cbind)",
+    "text": "Se puede hacer tambien por columnas (cbind)\nDesde luego las opciones son varias para escribir matrices. Otra manera de hacerlo es con lo siguiente:\n\ncol1 &lt;- c(3.2,3.3); col2 &lt;- c(2.5,3.1); col3 &lt;- c(2.4,3.3)\n( A &lt;- cbind(col1, col2, col3) )\n\n     col1 col2 col3\n[1,]  3.2  2.5  2.4\n[2,]  3.3  3.1  3.3\n\n\nPensemos que le queremos dar estructura a una matriz. Digamos que tenemos dos estudiantes de Economía y han matriculado un grupo de materias como las siguientes y desde luego han obtenido las siguientes notas.\n\n# Se le puede dar nombres para mejorar formato\ncolnames(A) &lt;- c(\"Micro I\",\"Macro II\",\" Econometría I\")\nrownames(A) &lt;- c(\"Ozuna\",\"Karol G\") \nA\n\n        Micro I Macro II  Econometría I\nOzuna       3.2      2.5            2.4\nKarol G     3.3      3.1            3.3\n\n\nY de esta forma tendrá algo mas estructurado. Recuerde ademas que las matrices tienen distintas formas y con ellas podemos hacer o tener distintos cálculos.\n\n# Matriz Diagonal y matrices de identidad: \ndiag( c(15,-2,21) )\n\n     [,1] [,2] [,3]\n[1,]   15    0    0\n[2,]    0   -2    0\n[3,]    0    0   21\n\ndiag(3)\n\n     [,1] [,2] [,3]\n[1,]    1    0    0\n[2,]    0    1    0\n[3,]    0    0    1\n\n# Forma de los elementos dentro de las matrices: Primer elemento es fila\n#Segundo elemento es columna\nA[2,1] # Sale el elemento de la Fila 2 y columna 1\n\n[1] 3.3\n\nA[,2]\n\n  Ozuna Karol G \n    2.5     3.1 \n\nA[,c(1,3)] #Correspondiente  Micro I y Econometria I\n\n        Micro I  Econometría I\nOzuna       3.2            2.4\nKarol G     3.3            3.3\n\n\nCon las matrices también se pueden hacer distintas operaciones básicas de calculo como adición, sustracción o restas, divisiones, multiplicaciones, siempre es bueno tener en mente las propiedades y leyes de orden para poder realizar este tipo de operación. Las sumas y restas deben operarse desde el mismo tamaño matricial. Lo que es, si la matriz A es de tamaño \\(n\\times k\\) entonces la matriz B también debe tener el mismo tamaño. Ejemplo:\n\\[A= \\begin{pmatrix}\n1 &2 \\\\\n3&4\n\\end{pmatrix}\nB=\n\\begin{pmatrix}\n5 &6 \\\\\n7&8\n\\end{pmatrix}\\]\nEsto es, si se tiene \\(A+B\\), el resultado es:\n\\[A+B=\\begin{pmatrix}\n6 &8 \\\\\n10&12\n\\end{pmatrix}\\]\nIncluso esto aplica a operaciones de multiplicación cuando se trata de elemento a elemento.\n\\[\nC= \\begin{pmatrix}\n8 &-4  &6 \\\\\n2 & 7 & 0\n\\end{pmatrix}_{2*3} \\quad y \\quad\nD= \\begin{pmatrix}\n4 &2  &-1 \\\\\n3 & 2 & -3\n\\end{pmatrix}_{2*3}\n\\]\nSi logra mirar el tamaño matricial es de \\(2\\times 3\\) tanto para C como para D, lo que no cumple con lo conformable cuando se realiza el proceso de la multiplicación matricial, lo que ocurre para esta parte es que se hará elemento a elemento p.e: \\(8\\times 4; -4\\times 2,...\\) y así sucesivamente. Es pertinente, siempre consolidar el cumplimiento de la característica de ser conformable, ya que garantiza que se pueda realizar la operación completa y de esta forma obtener los resultados deseados como por ejemplo en el caso de la regresión.\n\n### Podemos también tener y realizar operaciones con matrices\nC &lt;- matrix( c(8,-2,-4,7,6,0), nrow=2)\nD &lt;- matrix( c(4,3,2,2,-1,-3), nrow=2)\nC # Nos muestra la matriz realizada de C\n\n     [,1] [,2] [,3]\n[1,]    8   -4    6\n[2,]   -2    7    0\n\nD # Para observar los elementos de D\n\n     [,1] [,2] [,3]\n[1,]    4    2   -1\n[2,]    3    2   -3\n\n# Multiplicación elemento a elemento (no conformable)\nC*D\n\n     [,1] [,2] [,3]\n[1,]   32   -8   -6\n[2,]   -6   14    0\n\n# Transpuesta de una matriz:\n(G &lt;- t(D) )\n\n     [,1] [,2]\n[1,]    4    3\n[2,]    2    2\n[3,]   -1   -3\n\n# Forma correcta para MCO (conformable) de multiplicación:\n(H &lt;- C %*% G )\n\n     [,1] [,2]\n[1,]   18   -2\n[2,]    6    8\n\n# Para la Inversa o (-1) de matriz hay que usar solve\nsolve(H)\n\n            [,1]       [,2]\n[1,]  0.05128205 0.01282051\n[2,] -0.03846154 0.11538462",
+    "crumbs": [
+      "Parte 1",
+      "6: Matrices y regresión múltiple"
+    ]
+  },
+  {
+    "objectID": "lecciones/unidad06.html#indicadores-anova",
+    "href": "lecciones/unidad06.html#indicadores-anova",
+    "title": "6: Matrices y regresión múltiple",
+    "section": "Indicadores ANOVA",
+    "text": "Indicadores ANOVA\nRecuerde que nuestros modelos todo el tiempo deben ser testeados. Un mecanismo para eso, es calcular sus respectivas métricas de varianza y analizar el error. Para eso vamos hacer un calculo manual:\n\n# Tomamos los ingredientes\nn &lt;- nrow(datos)            \nk &lt;- 2                        \n\ny_media &lt;- mean(datos$wage) # Promedio dependiente\n\n# Métricas duras\nSSR &lt;- sum(residuals(model1)^2)          # residuos\nTSS &lt;- sum((datos$wage - y_media)^2)     # Suma total modelo\nESS &lt;- sum((fitted(model1) - y_media)^2) # Suma explicada\n\n# Calculamos\nSER &lt;- sqrt(1/(n-k-1) * SSR)             # Error Estandar\nRsq &lt;- 1 - (SSR / TSS)                   # R(cuadrado)\nadj_Rsq &lt;- 1 - (n-1)/(n-k-1) * SSR/TSS   # R(Ajustado)\n\n# Resultados\nc(\"SER\" = SER, \"R2\" = Rsq, \"R2-Ajustado\" = adj_Rsq)\n\n        SER          R2 R2-Ajustado \n382.1921164   0.1085554   0.1066425",
+    "crumbs": [
+      "Parte 1",
+      "6: Matrices y regresión múltiple"
+    ]
   }
 ]
