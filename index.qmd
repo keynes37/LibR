@@ -40,7 +40,7 @@ Este es un curso a nivel introductorio de econometría I. Intenta abordar los te
 :::{.callout-tip}
 ## Empezamos 
 
-Empiece con la [lección 1](Unidades/unidad01.qmd) de una vez! ahi encontrará como instalar R.
+Empiece con la [lección 1](Unidades/unidad01.qmd) de una vez! ahi encontrará como instalar R y mirar su interfaz.
 :::
 
 ## Su Profesor
