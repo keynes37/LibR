@@ -10,3 +10,6 @@ website:
           - lecciones/unidad04.qmd
           - lecciones/unidad05.qmd
           - lecciones/unidad06.qmd
+      - section: Parte 2
+        contents:
+          - lecciones/unidad07.qmd
