@@ -13,3 +13,5 @@ website:
       - section: Parte 2
         contents:
           - lecciones/unidad07.qmd
+          - lecciones/unidad08.qmd
+          - lecciones/unidad09.qmd

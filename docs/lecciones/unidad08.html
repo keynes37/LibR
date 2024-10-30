@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>8: Heterocedasticidad – Guía de Econometría para R (Uninorte)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../lecciones/unidad09.html" rel="next">
+<link href="../lecciones/unidad07.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="8: Heterocedasticidad – Guía de Econometría para R (Uninorte)">
+<meta property="og:description" content="Métodos cuantitativos en Econometría">
+<meta property="og:site_name" content="Guía de Econometría para R (Uninorte)">
+<meta name="twitter:title" content="8: Heterocedasticidad – Guía de Econometría para R (Uninorte)">
+<meta name="twitter:description" content="Métodos cuantitativos en Econometría">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Guía de Econometría para R (Uninorte)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://x.com/keynes37"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/keynes37"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://carlosyanes.netlify.app/"> <i class="bi bi-globe" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad07.html">Parte 2</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad08.html">8: Heterocedasticidad</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Guías de R para Econometría</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Parte 1</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">1: Empecemos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">2: Datos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">3: Distribución de datos</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">4: Mínimos Cuadrados Ordinarios</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">5: Formas Funcionales de MCO</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">6: Matrices y regresión múltiple</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Parte 2</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">7: Variables cualitativas</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad08.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">8: Heterocedasticidad</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../lecciones/unidad09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">unidad09.html</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#resumen" id="toc-resumen" class="nav-link active" data-scroll-target="#resumen">Resumen</a></li>
+  <li><a href="#heterocedasticidad" id="toc-heterocedasticidad" class="nav-link" data-scroll-target="#heterocedasticidad">Heterocedasticidad</a>
+  <ul class="collapse">
+  <li><a href="#pasos-para-mirar-la-heterocedasticidad" id="toc-pasos-para-mirar-la-heterocedasticidad" class="nav-link" data-scroll-target="#pasos-para-mirar-la-heterocedasticidad">Pasos para mirar la heterocedasticidad</a></li>
+  <li><a href="#test-de-goldfeld-quandt" id="toc-test-de-goldfeld-quandt" class="nav-link" data-scroll-target="#test-de-goldfeld-quandt">Test de Goldfeld-Quandt</a></li>
+  <li><a href="#prueba-test-de-white-y-breush-pagan" id="toc-prueba-test-de-white-y-breush-pagan" class="nav-link" data-scroll-target="#prueba-test-de-white-y-breush-pagan">Prueba (Test) de White y Breush-Pagan</a></li>
+  </ul></li>
+  <li><a href="#como-corregir-la-heterocedasticidad" id="toc-como-corregir-la-heterocedasticidad" class="nav-link" data-scroll-target="#como-corregir-la-heterocedasticidad">Como corregir la heterocedasticidad</a>
+  <ul class="collapse">
+  <li><a href="#modelo-de-errores-de-robustos-o-de-white." id="toc-modelo-de-errores-de-robustos-o-de-white." class="nav-link" data-scroll-target="#modelo-de-errores-de-robustos-o-de-white.">Modelo de errores de robustos o de White.</a></li>
+  <li><a href="#modelo-de-mínimos-cuadrados-generalizado-o-ponderado-wls." id="toc-modelo-de-mínimos-cuadrados-generalizado-o-ponderado-wls." class="nav-link" data-scroll-target="#modelo-de-mínimos-cuadrados-generalizado-o-ponderado-wls.">Modelo de Mínimos Cuadrados Generalizado o ponderado (WLS).</a></li>
+  <li><a href="#modelo-de-mínimos-cuadrados-factibles." id="toc-modelo-de-mínimos-cuadrados-factibles." class="nav-link" data-scroll-target="#modelo-de-mínimos-cuadrados-factibles.">Modelo de Mínimos Cuadrados Factibles.</a></li>
+  </ul></li>
+  <li><a href="#bibliografía" id="toc-bibliografía" class="nav-link" data-scroll-target="#bibliografía">Bibliografía</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../lecciones/unidad07.html">Parte 2</a></li><li class="breadcrumb-item"><a href="../lecciones/unidad08.html">8: Heterocedasticidad</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">8: Heterocedasticidad</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout="[30,70]">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 30.0%;justify-content: center;">
+<p><img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjZ3aGlicHU1N29wNXdkem5raDlmeDhydDFtbHZ5YXFtNHBtcjg4cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/X02wHlZ6beUQ6o83qe/giphy.gif" class="img-fluid"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 70.0%;justify-content: flex-start;">
+<p>La <strong>heterocedasticidad</strong> es una característica importante en el análisis de regresión que ocurre cuando la variabilidad de los errores o residuos no es constante a lo largo de las observaciones. Reconocer su presencia es fundamental porque puede afectar la eficiencia y validez de los estimadores en los modelos de regresión, llevando a inferencias estadísticamente incorrectas. Identificar y corregir la heterocedasticidad permite mejorar la precisión de las predicciones y la robustez de los resultados, lo que es clave en la toma de decisiones informadas y confiables en diversos campos como la economía, las finanzas y las ciencias sociales.</p>
+</div>
+</div>
+</div>
+<section id="resumen" class="level1 unnumbered">
+<h1 class="unnumbered">Resumen</h1>
+<p>En esta ocasión se plantea el desarrollo de los test mas importantes en econometría para detectar <strong>heterocedasticidad</strong> en los modelos que se estiman recurrentemente y por otro lado, se hace la corrección de los problemas de heterocedasticidad a partir de lo sugerido por la literatura económica.</p>
+</section>
+<section id="heterocedasticidad" class="level1">
+<h1>Heterocedasticidad</h1>
+<p>Un problema de <strong>varianza</strong> de los residuos del modelo puede llevarnos a estimaciones <span style="color:blue"> <strong>poco eficientes</strong> </span> a pesar de que los estimadores sigan siendo <em>lineales</em> e <em>insesgados</em>.</p>
+<p>Esta propiedad se describe como:</p>
+<p><span class="math display">\[Var (u|x_{1},x_{1},x_{2},x_{3},\dots,x_{k})=\sigma^{2}\]</span> De la cual, esta condición lo único que intenta decir es que los residuos deben tener una varianza <span style="color:red"> <strong>constante</strong> </span> sin importar las variaciones de las variables <span class="math inline">\(x's\)</span>.</p>
+<section id="pasos-para-mirar-la-heterocedasticidad" class="level2">
+<h2 class="anchored" data-anchor-id="pasos-para-mirar-la-heterocedasticidad">Pasos para mirar la heterocedasticidad</h2>
+<p>Para establecer el análisis y realizar seriamente una prueba de esto de debe:</p>
+<ol type="1">
+<li>Estimar el modelo y hallar sus residuos y elevarlos al cuadrado.</li>
+<li>Realizar un gráfico entre <span class="math inline">\(u^{2}\)</span> y los valores predichos del modelo <span class="math inline">\(\widehat{Y}\)</span>.</li>
+<li>Aplicar cualquiera de los test consecuentes: Goldfeld-Quandt, Breuch-Pagan o White (siendo este último el mas completo).</li>
+<li>(Solo si es necesario) Corregir el modelo con errores robustos o incluso MCO ponderado (WLS) o MCO factibles.</li>
+</ol>
+<p>Tomemos como ejemplo la base de datos con la que hemos venido trabajando todo el tiempo que se denomina salarios y cuya dependiente nos muestra los retornos en función de variables como la educación (educ), la edad (age) y el hecho de ser una persona Afrodescendiente (black).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargar Base de datos</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>Salarios <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"Salarios.xlsx"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 1 Estimar modelo</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>reg1<span class="ot">&lt;-</span><span class="fu">lm</span>(wage<span class="sc">~</span> educ<span class="sc">+</span> age<span class="sc">+</span> black, <span class="at">data =</span> Salarios)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 Guardamos los residuos en la base o data frame</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Salarios<span class="sc">$</span>residuos<span class="ot">&lt;-</span>reg1<span class="sc">$</span>residuals</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Salarios<span class="sc">$</span>residuos2<span class="ot">&lt;-</span>(reg1<span class="sc">$</span>residuals)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Salarios<span class="sc">$</span>predichos<span class="ot">&lt;-</span>reg1<span class="sc">$</span>fitted.values</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Análisis Gráfico</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span> (<span class="at">x=</span>Salarios<span class="sc">$</span>predichos, <span class="at">y=</span>Salarios<span class="sc">$</span>residuos2, </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="at">main =</span> <span class="st">"Gráfico Heterocedasticidad"</span>, <span class="at">ylab =</span> <span class="st">"Residuos al cuadrado"</span>, <span class="at">xlab=</span> <span class="st">"Y Predicho"</span> )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad08_files/figure-html/mod1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Podemos mirarlo también de esta manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">residuals</span>(reg1)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>yhat <span class="ot">&lt;-</span> <span class="fu">fitted</span>(reg1)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Salarios<span class="sc">$</span>educ,res, <span class="at">xlab=</span><span class="st">"Educación Individuos"</span>, <span class="at">ylab=</span><span class="st">"residuos"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(yhat,res, <span class="at">xlab=</span><span class="st">"Valores predichos"</span>, <span class="at">ylab=</span><span class="st">"residuos"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unidad08_files/figure-html/twho-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Incluso si solo queremos una sola gráfica para mirar finalmente el problema:</p>
+<p>Si observamos muy bien la <em>figura</em> anterior, vemos que al parecer los residuos cambian ante las variaciones de las variables <span class="math inline">\(x's\)</span> exogenas del modelo, esto podría indicar algún indicio de que el modelo establecido es <strong>heterocedastico</strong> o tiene distinta <em>varianza</em>. A continuación hay que implementar los <strong>test</strong> descritos en clase e incluso realizar regresiones auxiliares entre los residuos y las variables explicativas de los modelos.</p>
+<p>Usaremos una primera aproximación sugerida por Park (citado por Wooldridge, 2015). La estimación se hace mediante el modelo de regresión tradicional <strong>M.C.O</strong> pero utilizando como variable dependiente los <span style="color:red"> <strong>residuos al cuadrado</strong></span>. Es importante saber que no tiene sentido realizar o aplicar logaritmo a una variable binaria (dummy) - <em>cuando se tenga dentro de las explicativas</em> - que contiene unos (1) y ceros (0) ya que no existe logaritmo natural de cero.</p>
+<p>El modelo a estimar entonces es: <span class="math display">\[ln(\mu^{2})=\alpha_{0}+\alpha_{1}Ln(X)+V_{i}\]</span> <em>Donde <span class="math inline">\(V_i\)</span> es el residuo de ese modelo</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Se estima primero el modelo</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>reg.res<span class="ot">&lt;-</span><span class="fu">lm</span>(<span class="fu">log</span>(residuos2)<span class="sc">~</span><span class="fu">log</span>(educ) <span class="sc">+</span> <span class="fu">log</span>(age) <span class="sc">+</span> black, <span class="at">data =</span>Salarios)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostramos resultados con el paquete de stargazer</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(reg.res, <span class="at">type=</span><span class="st">"text"</span>, </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">title=</span><span class="st">"Resultado del Modelo"</span>,<span class="at">dep.var.labels=</span><span class="fu">c</span>(<span class="st">"Residuo al cuadrado"</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">covariate.labels=</span><span class="fu">c</span>(<span class="st">"Educación"</span>,<span class="st">"Edad"</span>,<span class="st">"Raza (negro=1)"</span>), </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">single.row=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Resultado del Modelo
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                        Residuo al cuadrado    
+-----------------------------------------------
+Educación                2.274*** (0.459)      
+Edad                      -0.423 (0.766)       
+Raza (negro=1)            -0.080 (0.219)       
+Constant                  6.012** (2.968)      
+-----------------------------------------------
+Observations                    935            
+R2                             0.028           
+Adjusted R2                    0.025           
+Residual Std. Error      2.199 (df = 931)      
+F Statistic           8.879*** (df = 3; 931)   
+===============================================
+Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Al parecer la variable <span style="color:orange"> <strong>educación</strong> </span> tiene problemas con la varianza, en la medida que ella <em>cambia</em> también lo hace la varianza de los residuos del modelo original. Lo <strong>ideal</strong> hubiera sido que ninguna de las variables explicativas que acompañan la explicación de la la variable dependiente fuese significativa. <em>El modelo de Park debe ir siempre en términos logarítmicos</em>.</p>
+<p>Tenemos problema de variación y en este caso podemos decir que si hay problemas en la varianza de los residuos del modelo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>resultpk <span class="ot">&lt;-</span> <span class="fu">huxreg</span>(<span class="st">"Tabla #1 Estimación Park"</span> <span class="ot">=</span> reg.res)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar tabla</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>resultpk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="huxtable" data-quarto-disable-processing="true" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  ">
+<colgroup><col><col></colgroup><tbody><tr>
+<th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Tabla #1 Estimación Park</th></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(Intercept)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">6.012 *&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(2.968)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">log(educ)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">2.274 ***</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.459)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">log(age)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-0.423&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.766)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">black</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-0.080&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.219)&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">N</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">935&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">R2</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.028&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">logLik</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-2061.350&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">AIC</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">4132.699&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th colspan="2" style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"> *** p &lt; 0.001;  ** p &lt; 0.01;  * p &lt; 0.05.</th></tr>
+</tbody></table>
+
+</div>
+</div>
+<p>Igualmente si deseamos verlos con el formato de <code>kable</code> (mas apropiado) para documentos de html, lo podríamos hacerlo así:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">tidy</span>(reg.res), </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">caption=</span><span class="st">"Park-test Estimation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Park-test Estimation</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">term</th>
+<th style="text-align: right;">estimate</th>
+<th style="text-align: right;">std.error</th>
+<th style="text-align: right;">statistic</th>
+<th style="text-align: right;">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">6.0124176</td>
+<td style="text-align: right;">2.9675947</td>
+<td style="text-align: right;">2.0260238</td>
+<td style="text-align: right;">0.0430471</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">log(educ)</td>
+<td style="text-align: right;">2.2744361</td>
+<td style="text-align: right;">0.4592674</td>
+<td style="text-align: right;">4.9523138</td>
+<td style="text-align: right;">0.0000009</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">log(age)</td>
+<td style="text-align: right;">-0.4227811</td>
+<td style="text-align: right;">0.7663727</td>
+<td style="text-align: right;">-0.5516652</td>
+<td style="text-align: right;">0.5813101</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">black</td>
+<td style="text-align: right;">-0.0796090</td>
+<td style="text-align: right;">0.2188354</td>
+<td style="text-align: right;">-0.3637849</td>
+<td style="text-align: right;">0.7161013</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="test-de-goldfeld-quandt" class="level2">
+<h2 class="anchored" data-anchor-id="test-de-goldfeld-quandt">Test de Goldfeld-Quandt</h2>
+<p>Uno de los test mencionado para verificar la Heterocedasticidad en los modelos es la prueba G-Q. Quien toma una parte de los datos (<em>regularmente después de ordenados se toma el centro de los datos</em>) y se establece un grupo de regresiones auxiliares. Esto se puede realizar directamente con el paquete <code>lmtest</code> junto al comando de <code>gqtest</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cargamos el paquete</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Con los datos del modelo original</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gqtest</span>(reg1, <span class="at">order.by =</span> <span class="sc">~</span>educ<span class="sc">+</span> age<span class="sc">+</span> black, <span class="at">data =</span> Salarios, <span class="at">fraction =</span> <span class="dv">187</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Goldfeld-Quandt test
+
+data:  reg1
+GQ = 0.85095, df1 = 370, df2 = 370, p-value = 0.9395
+alternative hypothesis: variance increases from segment 1 to 2</code></pre>
+</div>
+</div>
+<p>Como las observaciones o <span class="math inline">\(n=935\)</span> la parte donde va <em>fraction</em> es 187, que corresponde casi al 20% que requiere el test de datos de restricción para realizar la separación de grupos.</p>
+<p>Note que para esta parte, el test nos dice que no habría problema de heterocedasticidad ya que en este caso la métrica no solo es cercana a uno (diciendo que ambos grupos tienen misma varianza), si no ademas que el P-value permite decir con suficiente confianza que no debe recharzar la hipotesis nula de homocedasticidad, pero recuerde también que este tipo de <strong>test</strong> depende mucho de las formas funcionales de <span class="math inline">\(e_i\)</span> o de los residuos del modelo.</p>
+</section>
+<section id="prueba-test-de-white-y-breush-pagan" class="level2">
+<h2 class="anchored" data-anchor-id="prueba-test-de-white-y-breush-pagan">Prueba (Test) de White y Breush-Pagan</h2>
+<p>La prueba de White permite modelar o mejorar las apreciaciones de movimiento de la varianza de los residuos de forma <em>lineal, cuadrática e interactiva</em> entre las variables explicativas, a continuación una referencia del modelo a estimar.</p>
+<p><span class="math display">\[\mu^{2}=\alpha_{0}+\alpha_{i}(X)+\alpha_{j}(X)^{2}+\alpha_{s}(X_{i}*X_{j})+ V_{i}\]</span></p>
+<p>La idea es obtener el <strong>estadístico de prueba</strong> que en este caso es <span class="math inline">\(R^{2}\times n\)</span>, donde <span class="math inline">\(R^{2}\)</span> es el coeficiente de determinación y (n) viene siendo el total de observaciones del modelo original. La idea es medir y contrastar que:</p>
+<p><span class="math display">\[\begin{aligned}
+    H_{0}:&amp;\; \sigma^{2}_{i}=\sigma^{2} \quad \forall \; i=1,\dots,n \quad \text{Es Homocedastico} \\
+    H_{1}:&amp;\; \sigma^{2}_{i}\neq \sigma^{2} \quad  \text{Es Heterocedastico}\\
+\end{aligned}\]</span> El <span style="color:red"> <strong>criterio</strong> </span> es <strong>NO RECHAZAR</strong> la hipótesis nula <span class="math inline">\(H_{0}\)</span>, para eso, se requiere que <span class="math inline">\(R^{2}\times n&lt; \chi^{2}_{critico}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prueba de errores de white, de forma manual con las variables:</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>white<span class="ot">&lt;-</span><span class="fu">lm</span>(residuos2<span class="sc">~</span> educ<span class="sc">+</span> age<span class="sc">+</span>black<span class="sc">+</span><span class="fu">I</span>(educ<span class="sc">^</span>{<span class="dv">2</span>})<span class="sc">+</span><span class="fu">I</span>(age<span class="sc">^</span>{<span class="dv">2</span>})<span class="sc">+</span><span class="fu">I</span>(black<span class="sc">^</span>(<span class="dv">2</span>))<span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">I</span>(educ<span class="sc">*</span>age)<span class="sc">+</span> <span class="fu">I</span>(educ<span class="sc">*</span>black)<span class="sc">+</span><span class="fu">I</span>(age<span class="sc">*</span>black), <span class="at">data =</span> Salarios)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(white)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = residuos2 ~ educ + age + black + I(educ^{
+    2
+}) + I(age^{
+    2
+}) + I(black^(2)) + I(educ * age) + I(educ * black) + I(age * 
+    black), data = Salarios)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-282512 -113394  -71961   14853 4723908 
+
+Coefficients: (1 not defined because of singularities)
+                     Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)         1603725.9  1597394.8   1.004    0.316
+educ                 -34703.4    81060.0  -0.428    0.669
+age                  -84448.5    85338.1  -0.990    0.323
+black                 22186.9   428606.5   0.052    0.959
+I(educ^{\n    2\n})    -785.5     2301.3  -0.341    0.733
+I(age^{\n    2\n})      853.9     1251.5   0.682    0.495
+I(black^(2))               NA         NA      NA       NA
+I(educ * age)          2251.6     1606.9   1.401    0.161
+I(educ * black)      -11801.2    18118.6  -0.651    0.515
+I(age * black)         2821.1    10062.2   0.280    0.779
+
+Residual standard error: 313100 on 926 degrees of freedom
+Multiple R-squared:  0.02165,   Adjusted R-squared:  0.01319 
+F-statistic: 2.561 on 8 and 926 DF,  p-value: 0.009156</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora tomamos solo el R2 y multiplicamos por el número de observaciones (n)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(Salarios<span class="sc">$</span>residuos)<span class="sc">*</span><span class="fu">summary</span>(white)<span class="sc">$</span>r.squared </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 20.23943</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estadístico chi-cuadrado al 95% o alpha 5% y df=5 por las var explicativas</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qchisq</span>(<span class="fl">0.95</span>,<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 11.0705</code></pre>
+</div>
+</div>
+<p>Note que de lo anterior, se constata que el modelo analizado su Estadístico de White es mayor que el valor critico de la distribución ji-cuadrado <span class="math inline">\(\chi^{2}\)</span>, por ende tenemos el problema de que la varianza no es constante o tengamos <span style="color:red"> <strong>heterocedasticidad</strong> </span>.</p>
+<p>El test de Breusch-Pagan es similar al de White, simplemente que hace uso de las formas lineales (asociaciones) de las variables con respecto a los residuos del modelo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.package("lmtest")</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmtest)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Para Breusch-Pagan</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(reg1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    studentized Breusch-Pagan test
+
+data:  reg1
+BP = 17.376, df = 3, p-value = 0.0005914</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Una forma del test de White alternativa</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bptest</span>(reg1,<span class="sc">~</span><span class="fu">fitted</span>(reg1)<span class="sc">+</span><span class="fu">I</span>(<span class="fu">fitted</span>(reg1)<span class="sc">^</span><span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    studentized Breusch-Pagan test
+
+data:  reg1
+BP = 17.465, df = 2, p-value = 0.0001613</code></pre>
+</div>
+</div>
+<p>Para hacer uso de este test o prueba recuerde que debe tener instalado los paquetes de<span style="color:blue"> <strong>lmtest</strong> </span> y adicionalmente el paquete <code>car</code>, con estos podremos implementar las opciones de <span style="color:green"> <strong>bptest</strong> </span> sobre la regresión original y tener el estadístico correspondiente. Para este caso, nuevamente encontramos que contamos con suficiente <strong>evidencia estadística</strong> para <em>rechazar</em> la hipótesis de varianza constante y concluir definitivamente que el modelo tiene problemas de heterocedasticidad.</p>
+</section>
+</section>
+<section id="como-corregir-la-heterocedasticidad" class="level1">
+<h1>Como corregir la heterocedasticidad</h1>
+<p>La corrección del problema de heterocedasticidad es recuperar en parte la correcta medida de los <strong>errores estándar</strong> de los <strong>estimadores</strong> del modelo, de estas distintas formas y maneras recaerá el intercambio y elección del investigador sobre si prefiere <em>insesgadez</em> o <em>eficiencia</em>, entre mas <strong>eficiente</strong> quiera los <strong>estimadores</strong>, estos serán menos insesgados. Existen tres formas de corregir la heterocedasticidad de un modelo y esto es:</p>
+<ul>
+<li>Modelo de errores de robustos o de White.</li>
+<li>Modelo de Mínimos Cuadrados Generalizado o ponderado (WLS).</li>
+<li>Modelo de Mínimos Cuadrados Factibles.</li>
+</ul>
+<p>El uso de ellos dependerá de dos consideraciones:</p>
+<ul>
+<li>Cuando se <em>conoce</em> la <strong>forma funcional</strong> de <span class="math inline">\(\sigma^{2}\)</span>.</li>
+<li>Cuando se <em>desconoce</em> simplemente asumir o realizar modelos doblemente logarítmicos.</li>
+</ul>
+<section id="modelo-de-errores-de-robustos-o-de-white." class="level2">
+<h2 class="anchored" data-anchor-id="modelo-de-errores-de-robustos-o-de-white.">Modelo de errores de robustos o de White.</h2>
+<p>La corrección de White se emplea de la siguiente forma:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Correccion de la heterocedasticidad ##</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Se tiene el modelo con sus valores normales</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(reg1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) -434.2398   152.7506 -2.8428   0.00457 ** 
+educ          55.5698     5.6386  9.8553 &lt; 2.2e-16 ***
+age           20.1689     3.9232  5.1409 3.333e-07 ***
+black       -182.6703    37.0325 -4.9327 9.603e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Con errores robustos de white</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>regwhite<span class="ot">&lt;-</span><span class="fu">coeftest</span>(reg1, hccm)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>regwhite</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+t test of coefficients:
+
+             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) -434.2398   165.1816 -2.6289  0.008708 ** 
+educ          55.5698     6.0842  9.1335 &lt; 2.2e-16 ***
+age           20.1689     4.0035  5.0378 5.656e-07 ***
+black       -182.6703    31.0071 -5.8912 5.351e-09 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>La aplicación de errores robustos (sandwich) es un poco compleja para explicar en esta parte del curso, sin embargo, -si desea echar un vistazo- puede consultar el siguiente <a href="https://www.stat.berkeley.edu/~census/mlesan.pdf">enlace</a>. Si logra observar a los residuos, estos son mayores o mas grandes que los que habia estimado el modelo original.</p>
+</section>
+<section id="modelo-de-mínimos-cuadrados-generalizado-o-ponderado-wls." class="level2">
+<h2 class="anchored" data-anchor-id="modelo-de-mínimos-cuadrados-generalizado-o-ponderado-wls.">Modelo de Mínimos Cuadrados Generalizado o ponderado (WLS).</h2>
+<p>Para esta parte debe tener en cuenta la variable que genera el problema. El test de park nos sugirió a la <em>educación</em> como la causante de la variación de los residuos, por tanto:</p>
+<ul>
+<li><p>El modelo general de regresión es: <span class="math display">\[y=\beta_{0}+\beta_{1}X_{1}+\cdots+\beta_{k-1}X_{k-1}+ \mu\]</span></p></li>
+<li><p>Asumamos que <span class="math display">\[Var(\mu|x)= \sigma^{2}h(x), \: \text{y} \; h(x)&gt;0\]</span></p></li>
+<li><p>Supongamos que <span class="math inline">\(h(x)\)</span> es conocida y <span class="math inline">\(\sigma^{2}\)</span> desconocida (pero estimable a partir de datos).</p></li>
+<li><p>Para una muestra aleatoria de la población, podemos escribir: <span class="math display">\[\sigma_{i}^{2}= Var(\mu_{i}|x_{i})= \sigma^{2}h(x_{i})= \sigma^{2}h_{i}\]</span> La corrección será:</p></li>
+<li><p>El modelo general de regresión lo dividimos entonces por <span class="math inline">\(\sqrt{h_{i}}\)</span> <span class="math display">\[\underbrace{y_{i}^{*}}_{\frac{y_i}{\sqrt{h_{i}}}}=\beta_{0}^{*}\underbrace{X_{0i}^{*}}_{\frac{1}{\sqrt{h_{i}}}}+\beta_{1}^{*}\underbrace{X_{1}^{*}}_{\frac{x_{1}}{\sqrt{h_{i}}}}+\cdots+\beta_{k-1}^{*}\underbrace{X_{k-1}^{*}}_{\frac{x_{k-1}}{\sqrt{h_{i}}}}+ \underbrace{\mu_{i}^{*}}_{\frac{\mu_{i}}{\sqrt{h_{i}}}}\]</span></p></li>
+<li><p>Donde los errores <strong>transformados</strong> son homocedásticos y esta es la demostración: <span class="math display">\[Var(\mu_{i}^{*}|x_{i})= Var \left ( \frac{\mu_{i}}{\sqrt{h_{i}}} \Bigg| x_{i} \right)=E \left [ \left ( \frac{\mu_{i}}{\sqrt{h_{i}}}\right)^{2} \Bigg| x_{i}  \right] = \frac{E(\mu_{i}^{2}|x_{i})}{h_{i}}= \frac{\sigma^{2}h_{i}}{h_{i}}= \sigma^{2}\]</span></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usando Mínimos cuadrados ponderados (WLS)</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>regp1<span class="ot">&lt;-</span><span class="fu">lm</span>(wage<span class="sc">~</span> educ<span class="sc">+</span> age<span class="sc">+</span> black, <span class="at">weights =</span> <span class="dv">1</span><span class="sc">/</span>educ, <span class="at">data =</span> Salarios)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regp1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + age + black, data = Salarios, weights = 1/educ)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-208.01  -68.93  -12.47   54.95  610.62 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -408.778    151.187  -2.704  0.00698 ** 
+educ          56.574      5.748   9.842  &lt; 2e-16 ***
+age           18.954      3.814   4.970 7.96e-07 ***
+black       -173.431     35.049  -4.948 8.88e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 100.4 on 931 degrees of freedom
+Multiple R-squared:  0.1505,    Adjusted R-squared:  0.1478 
+F-statistic: 54.99 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Note que el resultado nos cambia los errores estandar del modelo original que teníamos, pero ahora los resultados son mas “eficientes”, la variable de <em>educación</em> es el peso de división que se aplica.</p>
+</section>
+<section id="modelo-de-mínimos-cuadrados-factibles." class="level2">
+<h2 class="anchored" data-anchor-id="modelo-de-mínimos-cuadrados-factibles.">Modelo de Mínimos Cuadrados Factibles.</h2>
+<p>En esta ocasión, se hace a partir de una transformación (geométrica), la idea va en camino en eliminar la forma funcional (gráfica) que tiene la varianza de los residuos y de alguna manera, eliminar esa apreciación o forma. recuerde que la varianza no debe tener ninguna forma funcional.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora usando Mínimos cuadrados factibles</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># FGLS: Se estima la función de varianza del modelo</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>lnu2 <span class="ot">&lt;-</span> <span class="fu">log</span>(<span class="fu">resid</span>(reg1)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>varreg<span class="ot">&lt;-</span><span class="fu">lm</span>(lnu2<span class="sc">~</span>educ<span class="sc">+</span> age<span class="sc">+</span> black, <span class="at">data =</span> Salarios)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Se aplica el factible</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="fu">exp</span>(<span class="fu">fitted</span>(varreg))</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="co"># FGLS: Regresion</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>regp2<span class="ot">&lt;-</span><span class="fu">lm</span>(wage<span class="sc">~</span> educ<span class="sc">+</span> age<span class="sc">+</span> black, <span class="at">weight=</span>w, <span class="at">data=</span>Salarios)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(regp2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = wage ~ educ + age + black, data = Salarios, weights = w)
+
+Weighted Residuals:
+    Min      1Q  Median      3Q     Max 
+-4.4385 -1.3924 -0.2493  1.0813 12.1486 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -381.707    151.346  -2.522   0.0118 *  
+educ          57.815      6.083   9.504  &lt; 2e-16 ***
+age           17.614      3.680   4.786 1.98e-06 ***
+black       -164.013     32.058  -5.116 3.79e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 2.004 on 931 degrees of freedom
+Multiple R-squared:  0.1424,    Adjusted R-squared:  0.1396 
+F-statistic: 51.53 on 3 and 931 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Ahora miremos todos los modelos, en el formato acádemico de los papers</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ahora un resumen de todos los modelos</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(reg1,regwhite,regp1,regp2, <span class="at">type=</span><span class="st">"text"</span>, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title=</span><span class="st">"Resultado del Modelo"</span>,<span class="at">dep.var.labels=</span><span class="fu">c</span>(<span class="st">"MCO"</span>,<span class="st">"white"</span>,<span class="st">"Ponderado"</span>,<span class="st">"Factible"</span>),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">covariate.labels=</span><span class="fu">c</span>(<span class="st">"Educación"</span>,<span class="st">"Edad"</span>,<span class="st">"Raza (negro=1)"</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>          , <span class="at">single.row=</span>F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Resultado del Modelo
+==============================================================================
+                                             Dependent variable:              
+                               -----------------------------------------------
+                                   MCO        white           Ponderado       
+                                   OLS     coefficient           OLS          
+                                              test                            
+                                   (1)         (2)         (3)         (4)    
+------------------------------------------------------------------------------
+Educación                       55.570***   55.570***   56.574***   57.815*** 
+                                 (5.639)     (6.084)     (5.748)     (6.083)  
+                                                                              
+Edad                            20.169***   20.169***   18.954***   17.614*** 
+                                 (3.923)     (4.004)     (3.814)     (3.680)  
+                                                                              
+Raza (negro=1)                 -182.670*** -182.670*** -173.431*** -164.013***
+                                (37.033)    (31.007)    (35.049)    (32.058)  
+                                                                              
+Constant                       -434.240*** -434.240*** -408.778*** -381.707** 
+                                (152.751)   (165.182)   (151.187)   (151.346) 
+                                                                              
+------------------------------------------------------------------------------
+Observations                       935                     935         935    
+R2                                0.155                   0.151       0.142   
+Adjusted R2                       0.152                   0.148       0.140   
+Residual Std. Error (df = 931)   372.321                 100.372      2.004   
+F Statistic (df = 3; 931)       56.889***               54.991***   51.535*** 
+==============================================================================
+Note:                                              *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+</div>
+</div>
+<p>Finalmente, la comparación de modelos nos permitirá realizar algunos escenarios, la lectura de cada uno de los modelos es la misma. El tratamiento de la heterocedasticidad irá en la vía de la variable que este dando el problema, o de la forma funcional de la misma varianza del modelo. Estas formas funcionales varían de acuerdo a la gráfica que se tenga del comportamiento de los <span class="math inline">\(\mu^{2}\)</span> con el <span class="math inline">\(\widehat{y}\)</span>. Estas formas son tal cual existen en geometría, por ejemplo: <span class="math inline">\(f(x)=x^{2}\)</span>, <span class="math inline">\(F(x)=\sqrt{x}\)</span>, <span class="math inline">\(F(x)=e^{x}\)</span>, etc.</p>
+</section>
+</section>
+<section id="bibliografía" class="level1 unnumbered">
+<h1 class="unnumbered">Bibliografía</h1>
+<p>Wooldridge, J. M. (2015). Introductory econometrics: A modern approach. Cengage learning.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../lecciones/unidad07.html" class="pagination-link" aria-label="7: Variables cualitativas">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">7: Variables cualitativas</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../lecciones/unidad09.html" class="pagination-link" aria-label="unidad09.html">
+        <span class="nav-page-text">unidad09.html</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/keynes37/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
