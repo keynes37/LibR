@@ -1,0 +1,322 @@
+---
+title: "9: Autocorrelación"
+---
+
+::: {layout="[30,70]"}
+
+![](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGxieWt2MHZlOG93MWw4NzRndjQ3NTloejEyem5sOTY2dm5hOWtvbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qqWb8JuT9lIYkKFbRx/giphy.gif)
+
+La **autocorrelación** es un aspecto crucial en el análisis de series temporales y modelos de regresión, que se presenta cuando los errores o residuos de un modelo están correlacionados entre sí a lo largo del tiempo o de las observaciones. Su presencia sugiere que las observaciones no son completamente independientes, lo que puede llevar a subestimar o sobrestimar la significancia de los coeficientes y comprometer la validez de las inferencias. Detectar y ajustar la autocorrelación permite mejorar la precisión y confiabilidad del modelo, lo cual es esencial para realizar pronósticos robustos y tomar decisiones informadas en el ámbito de la economía y las finanzas, entre otros campos.
+
+:::
+
+```{r setup, include=FALSE}
+library(huxtable)
+library(extrafont)
+library(kableExtra)
+library(tidyverse)
+library(pacman)
+p_load(broom, latex2exp, ggplot2, ggthemes, ggforce, viridis, dplyr, magrittr, knitr, parallel)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# Resumen {-}
+En esta parte se toma como referencia los modelos de **series de tiempo** para mostrar el análisis la relación entre las perturbaciones en el tiempo, conocido como autocorrelación, se describe su concepto, se muestra la prueba o test de durbin watson y se plantea una solución con el método de Cochrane-Orcutt.
+
+# Series de tiempo
+El problema de violación de supuestos que tienen que ver con la independencia de los residuos en el tiempo, debe verse conociendo o definiendo lo que son las series de tiempo. Aquellos modelos que cuentan con variables explicativas o $X$ y cuyo sub-indice denota una periodicidad, tomemos el ejemplo de anual, entonces $X_{t}$ hace referencia a $X_{2022}$. Si es mensual, entonces es $X_{Enero,2022}$, y así sucesivamente con otros meses, este tipo de **variables** son consideradas series de tiempo y puede ser escrita como:
+
+$$Y_{t}=\left\{Y_{t}, Y_{t+1},Y_{t+2},\dots,Y_{t+n} \right\}$$
+
+En <span style="color:lightblue"> **R** </span> los objetos de series de tiempo deben vincularse con la opción de  `ts`, que hace referencia a **time serie**, un ejemplo de esto es para implantar:
+
+>**NOTA**: Puede dar click en el cuadro del gráfico para ampliarlo
+
+```{r, graph1}
+# Serie anual
+y<-ts(c(11,12,14,15,15,17,18,19,21), start = 2010)
+y
+plot(y) # Puede darle clic al cuadro para ampliar el gráfico
+
+## Serie Mensual ##
+z<-ts(c(11,10,8,7,11,12,14,7,6), frequency = 12, start = c(2010,1))
+z
+plot(z)
+```
+
+Otras opciones de acuerdo a la **periodicidad** que tenga son:
+
+|   **Tipo**      |      **Periodo**     |       **Ejemplo**    |
+|:---------------:|:--------------------:|:--------------------:|
+| Anual           | 1                    | 2020                 |
+| Mensual         | 12                   | c(2005,1)            |
+| Trimestral      | 4                    | c(2008,3)            |
+| Diario          | 7 o 365.25           | 1 o c(2005,234)      |
+| Semanal         | 52.18                | 1                    |
+| Horas           | 24 o 168 o 8766      | 1                    |
+
+Para esta <span style="color:red"> **guía** </span> vamos a usar e instalar los siguientes paquetes para poder trabajar:  
+
+```{r, install}
+# Ejemplo de instalación
+# install.package("dynlm") # Para instalar paquetes 
+
+# Activar paquetes después de instalados:
+library(readxl) # Importar datos desde excel
+library(flextable) # Tablas de modelos
+library(dplyr) # Manejar tablas de datos
+library(car) # Test estadísticos
+library(lmtest) # Test estadísticos
+library(dynlm) # Modelo dinámico
+library(orcutt) # Corrección Autocorrelación
+```
+
+Ya cargados los paquetes a utilizar, se puede proceder a importar la base de datos de trabajo. En este caso, se utiliza la base de <span style="color:green"> **ventas.xlsx** </span> que contiene las variables de _Ventas_ e _Inventarios_ con frecuencia anual de una empresa en particular desde el periodo de 1950 hasta 1991.
+
+```{r, model}
+# Cargar base de datos
+ventas <- read_excel("ventas.xlsx")
+# Para conocer los nombres de las variables
+names(ventas)
+```
+
+Luego de que se conoce cada una de las variables que se encuentran en la base, podemos entonces empezar a trabajar con ella y realizar análisis gráficos. Para eso, vamos a declarar la base como una serie de tiempo:
+
+```{r}
+# Establecer como objeto de series de tiempo
+datoserie<- ts(ventas, start = 1950)
+# Tratamiento individual de la serie
+serie1<-ts(ventas$ventas, start = 1950)
+# Gráfica en el tiempo
+plot(serie1,
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Ventas en millones de $",
+     xlab = "Fechas",
+     main = "Serie de ventas")
+```
+
+El análisis de series de tiempo suele ser muy visual, lo ideal siempre es mirar los <span style="color:red"> **componentes** </span> que exige dicha serie como su **tendencia**, **estacionalidad**, **ciclo** y su patrón **irregular**. Para la serie de <span style="color:green"> **ventas** </span> tenemos un comportamiento _creciente_ con tendencia positiva, lo que significa que con el tiempo han venido aumentando periodo a periodo y que la dinámica ha sido buena.
+
+Las gráficas en <span style="color:red"> **econometría** </span>  son muy complementarias y al igual que en el tema de las series de tiempo permiten apreciar comportamientos y dinámicas de las variables de interés.
+
+## Estimación de modelo
+
+Para estimar un modelo estático -*se hace análisis en el tiempo ahora y no en un solo periodo de tiempo*- se debe realizar con la opción de `dynlm`. Esto nos muestra resultados como:
+
+```{r, mod1}
+# Modelo de regresión estático serie de tiempo
+reg.ts<-dynlm(ventas~inventarios, data = datoserie)
+volk<- huxreg("Tabla #1" = reg.ts)
+# Mostrar tabla
+volk
+```
+
+Observe que es muy similar la exploración tal cual se tratara de un modelo de <span style="color:red"> **corte transversal** </span>. Sin embargo, el ajuste se hace a la <span style="color:blue"> **periodicidad** </span> que lleva, que en este caso es anual. Muchas veces los modelos o las salidas de los estimadores $(\beta)$ salen en notación científica, una forma de tener una lectura mejor se hace con los complementos de `coef` y `compareCoefs` del paquete `car` y con esto mirarlos de otra manera:
+
+```{r, mod1incoef}
+coef(reg.ts)
+```
+
+Note que por una unidad monetaria que *aumenten* los inventarios para este caso las ventas aumentan en 0.64 unidades monetarias.
+
+Si desea mirarlo de forma dinámica, es decir añadiendo los rezagos de la variable dependiente en otro momento de tiempo, puede entonces tener:
+
+$$\text{ventas}_t=\beta_0+\beta_1\text{inventarios}_t+\beta_2\text{ventas}_{t-1}+u_t$$
+
+```{r, mod2}
+# Modelo de regresión dinámico de serie de tiempo
+reg.ts2<-dynlm(ventas~inventarios+L(ventas,1), data = datoserie)
+volk2<- huxreg("Tabla #2" = reg.ts2)
+# Mostrar tabla
+volk2
+```
+
+Observe que con la opción de `L(x,1)` hace referencia al **rezago** cuando se usa la opción del paquete de `dynlm`. Con la opción tradicional de los modelos como `lm` o modelo lineal se debe usar la opción `lag(x)`, *p.e*: `lm(ventas~inventario+lag(ventas),base=datos)`
+
+## Rezagos en las series de tiempo
+
+Los rezagos $L(X_{t})$ son valores de la -misma- serie pero tenidos en cuenta en otro periodo de tiempo. La letra (L) representa en ingles la palabra (LAG). Una serie va a tener un número considerado de rezagos de acuerdo al número de observaciones que tenga disponible. Un rezago de forma matemática se expresa como:
+
+$$L(X_{t})=X_{t-1}$$
+La potencia del rezago (LAG) o (L) puede conducir a mostrar el orden o número de rezago que tenga una serie de tiempo, de tal forma que:
+$$L^{2}(X_{t})=X_{t-2}\; ; \quad L^{\rho}(X_{t})=X_{t-\rho}$$ 
+
+Un rezago de orden (2) o $X_{t-2}$ significa retrasar dos periodos la serie de tiempo, esto es:
+
+```{r lags}
+# Extraer residuos y gráficarlos con respecto al tiempo
+residuos<-reg.ts$residuals
+
+# Objetos normales o numéricos
+tiempo<-ventas$tiempo
+class(residuos) # mirar el tipo del objeto
+residuos<-as.numeric(residuos)
+
+# Para mirar rezagos del residuo del modelo
+tibble(tiempo, residuos, lag(residuos), lag(residuos,2))
+```
+
+Mire que el primer rezago de los residuos cuando estaba en el periodo de 1959 tomaba el valor de 1429, ahora ese valor será del año 1958 y si es de orden dos o LAG(2) entonces la serie se sigue desplazando. Note además que en la medida que rezaga -*irá perdiendo valores o datos de la serie-* le aparecerán opciones de NA o **missing values**, esto ocurre por la eliminación de valores.
+
+## Análisis de residuos
+
+Teniendo la regresión del modelo **original**, se procede a extraer los residuos del modelo. Cuando se tiene modelo de series de tiempo el <span style="color:red"> **residuo** </span>  toma el nombre de $\epsilon_{t}$, el significado sigue siendo el mismo del $\mu_{t}$ y este vector captura en el tiempo las variables que afectan a la **dependiente** pero que no se observan por alguna razón o motivo distinto al proceso de la investigación.
+
+```{r graphos}
+# Gráficas de análisis
+plot(lag(residuos),residuos)
+abline(lm(residuos~lag(residuos)), col="red")
+
+# Añadiendo a la base original el residuo
+ventas$residuos<-residuos
+residuosmod.l1<-lag(ventas$residuos)
+# Misma gráfica con otra opción
+scatterplot(residuos~residuosmod.l1, regLine=T, smooth=F,xlab = "Rezago residuos", ylab = "Residuos")
+```
+
+La figura anterior nos muestra una relación <span style="color:blue"> **positiva** </span> entre el residuo $\epsilon_{t}$ y su rezago $\epsilon_{t-1}$, lo que podría decirnos que tenemos indicios de que exista una **autocorrelación positiva** y se viole el supuesto de $cov(\epsilon_{t},\epsilon_{t-1})=0$ y por ende nuestros estimadores $\beta_{i}$ sean <span style="color:red"> **ineficientes** </span> y poco consistentes aunque sigan siendo **lineales** e **insesgados**.
+
+```{r, modres}
+# Hallando el coeficiente (rho)
+errmod<-lm(residuos~0+residuosmod.l1)
+result_error<-huxreg("Tabla #3 Modelo error" = errmod)
+result_error
+```
+
+Medir cuanto afecta el rezago del residuo al residuo en el tiempo presente se puede hace mediante una regresión **auxiliar** que involucre los residuos como variables y debe estimarse sin intercepto.
+
+$$\epsilon_{t}=\rho_{1}\epsilon_{t-1}+v_{t}$$
+
+Este modelo es conocido como modelo de primera etapa. Al ser $(\rho)$ significativo, nos muestra un indicio mayor y superior de decir que el modelo tiene **autocorrelación**, además que el signo también nos muestra la dirección de esta.
+
+# Test Durbin-Watson
+
+Es el ideal para estimar estadísticamente si existe o nó el problema de auto-correlación, depende de la sumatoria de los residuos del modelo y de la diferencia $\triangle_{t}\epsilon_{t}$ y debe tender a tomar el valor de dos (2).
+
+$$d= \frac{\sum \limits_{t=2}^{T} (\epsilon_{t}-\epsilon_{t-1})^{2}}{\sum \limits_{t=1}^{T} \epsilon^{2}_{t}} \approx 2$$
+En <span style="color:lightblue"> **R** </span> solo es hacer:
+
+```{r dw}
+# Prueba con el Durbin-Watson del modelo original
+dwtest(reg.ts)
+```
+
+Para este caso, al nivel del 95% y 90% de significancia **rechazamos** la **hipótesis nula** $H_{0}$ de NO auto-correlación y el modelo esta presentando el problema. La hipótesis que esta midiendo el estadístico es doble -*hay dos hipótesis nula*-, es decir:
+
+$$\begin{aligned}
+    H_{0}:\;& \text{No hay Autocorrelación positiva}(+) \\
+    H_{0}:\;& \text{No hay Autocorrelación negativa}(-)\\
+    H_{a}:\;& \text{Hay Autocorrelación Positiva o negativa}(+/-)
+\end{aligned}$$
+
+El resultado nos indica que tenemos autocorrelación **positiva**.
+
+
+# Test Breusch-Pagan
+
+Este es interesante por ser dinámico. Para esta parte entonces tomaremos el modelo dinámico de regresión. Después de estimado se procede a guardar el **residuo**, -es bueno tener presente que hay que hacerlo de forma rezagada-.
+
+```{r}
+# Guardar residuos del modelo dinámico
+ventas$ebg <- c(NA, residuals(reg.ts2))
+
+# Podemos mirar su comportamiento en el tiempo
+red <- "#fb6107"
+ggplot(data = ventas, aes(x = tiempo, y = ebg)) +
+  geom_line(size = 0.5, alpha = 0.3) +
+  geom_point(size = 2.5, color = red) +
+  xlab("Años") +
+  ylab("e")
+
+```
+
+Tenemos una forma de varianza del residuo inestable y variable en el tiempo (sobre todo en los últimos periodos). Esto puede darnos de indicios de autocorrelación en la serie. Procedemos entonces aplicar el test **F**. Para mirar esto, debemos hacer uso del paquete `lmtest` y usar la función de waldtest y mirar si en efecto el estadístico es $>$ al valor crítico.
+
+```{r}
+library(lmtest)
+# Modelo
+bg_model <- lm(
+  ebg ~ lag(ventas) + inventarios + lag(ebg) + lag(ebg, 2),
+  data = ventas)
+
+# Valor critico F
+ qf(p = .05, df1 = 34, df2 = 36, lower.tail = FALSE)
+```
+
+Luego de tener el valor de la tabla, podemos tenerlo como referencia para hacer el calculo directo
+
+```{r}
+# Valor de la prueba
+waldtest(bg_model, c("lag(ebg)", "lag(ebg, 2)"))
+```
+
+Con este orden de autoregresividad de orden (2) para los residuos, tenemos suficiente evidencia estadística para no rechazar la hipótesis de "no autocorrelación". De otra forma, podemos mirar que este estadístico calculado es menor al valor critico proporcionado por la tabla estadística de la distribución **F**.
+
+# Test Breusch-Godfrey (Opcional)
+
+Un test adicional para el proceso, nos permite tener un espectro mas amplio de lo que se visualiza como problema y tambien se encuentra en el paquete de `lmtest` es el de Breush-Godfrey. Este permite entonces mirar que tan independiente es el residuo con su pasado anterior.
+
+```{r}
+bgtest(reg.ts)
+```
+
+Rechazando la hipótesis nula y nuevamente concluyendo que existe dependencia serial de los residuos del modelo de Ventas e inventarios.
+
+# Corrección de autocorrelación
+
+Las diferencias en las series de tiempo no es mas que la sustracción entre la variable original y un rezago de ella y sirve para **aislar** efectos temporales, por ejemplo la primera diferencia de una serie utilizando el <span style="color:red"> **operador rezago** </span> es:
+
+$$\triangle_{t}= Y_{t}-Y_{t-1}=Y_{t}(1-L)$$
+
+La expresión se toma como $\triangle_{t}$, y con ella se ha eliminado o sustraído el efecto temporal del pasado de la serie sobre ella misma. Una diferencia de **orden superior** ya implica el uso de un polinomio de orden mayor y este es:
+
+$$\triangle^{2} Y_{t}= Y_{t}-2Y_{t-1}+Y_{t-2}$$
+
+La demostración de lo anterior es lo siguiente en términos algebraicos y haciendo uso del operador **rezago**:
+
+$$\begin{aligned}
+   \\
+  \Delta^{2} Y_{t}=& \Delta \Delta Y_{t} \\
+   \Delta^{2} Y_{t}=& \Delta \left ( Y_{t}-Y_{t-1} \right )\\
+  \Delta^{2} Y_{t}=& \left ( Y_{t}-Y_{t-1} \right ) - \left ( Y_{t-1}-Y_{t-2} \right ) \\
+  \Delta^{2} Y_{t}=&Y_{t}-2Y_{t-1}+Y_{t-2}\\
+  \Delta^{2} Y_{t}=&  Y_{t}-2LY_{t}+L^{2}Y_{t}\\
+   \Delta^{2} Y_{t}=&  Y_{t} \left ( 1 -2L+L^{2}\right ) 
+\end{aligned}$$
+
+Este tipo de diferenciaciones hacer parte de la última etapa del modelo con el objeto de corregir el problema de la **autocorrelación** y se hace de la siguiente forma:
+
+## Pasos para establecer la corrección
+Para corregir este problema, hay que hacer lo siguiente:
+
+- Tomar el parámetro $\rho$ que sale del modelo: $\epsilon_{t}=\rho_{1}\epsilon_{t-1}+v_{t}$. (Primera etapa)
+- Aplicar la **primera diferencia** $\triangle_{t}$  del modelo original incluyendo al $\rho$. (Segunda etapa) 
+$$Y_{t}-\rho Y_{t-1}= \beta_{0}(1-\rho)+\beta_{1}(X_{t}-\rho X_{t-1})+ \epsilon_{t}$$
+El resultado es un modelo **Bi-etapico** o de dos etapas y se lee igual que si se tratara del original.
+
+```{R, correction}
+# Corrección 
+cochrane.orcutt(reg.ts)
+```
+
+La salida anterior nos muestra el $(\rho)$ de forma directa -*omite realizar la regresión auxiliar de los residuos*- y transforma las variables de tal forma que se aísla el efecto del rezago, todo esto, cambia los resultados de los $\beta$ estimados anteriormente del modelo original y ya el estadístico del <span style="color:blue"> **D-Watson** </span> tiende o es cercano a dos (2).
+
+La interpretación en este caso entonces nos dice que en la medida que aumentan los inventarios entonces las ventas se incrementan en 0.64 unidades monetarias. Una manera mas completa de mirar los parámetros del modelo original como el modelo corregido o **bietapico** es de la siguiente manera:
+
+```{r}
+library(stargazer)
+reg.corr<-cochrane.orcutt(reg.ts)
+stargazer(reg.ts,reg.corr,  type="text", 
+          title="Resultados del Modelo",dep.var.labels=c("MCO //  Bi-etapico"),
+          covariate.labels=c("Inventarios")
+          , single.row=F)
+```
+
+# Bibliografía {-}
+
+Wooldridge, J. M. (2015). Introductory econometrics: A modern approach. Cengage learning.
+
+Stock, J. H., & Watson, M. W. (2017). Twenty years of time series econometrics in ten pictures. Journal of Economic Perspectives, 31(2), 59-86.
+
+
